@@ -1,4 +1,3 @@
-_G.luvit_require = require
 local paths = {
     "?.lua",
     "/Users/tony/Documents/project/bnb/server/logic/?.lua",

@@ -15,12 +15,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-return {
-  Stream = require("stream/stream_core").Stream,
-  Writable = require("stream/stream_writable").Writable,
-  Transform = require("stream/stream_transform").Transform,
-  Readable = require("stream/stream_readable").Readable,
-  PassThrough = require("stream/stream_passthrough").PassThrough,
-  Observable = require("stream/stream_observable").Observable,
-  Duplex = require("stream/stream_duplex").Duplex
+
+--[[lit-meta
+  name = "luvit/los"
+  version = "2.0.0"
+  license = "Apache 2"
+  homepage = "https://github.com/luvit/luvit/blob/master/deps/los.lua"
+  description = "Tiny helper to get os name in luvit."
+  tags = {"os"}
+]]
+
+local jit = require('jit')
+
+local map = {
+  ['Windows'] = 'win32',
+  ['Linux'] = 'linux',
+  ['OSX'] = 'darwin',
+  ['BSD'] = 'bsd',
+  ['POSIX'] = 'posix',
+  ['Other'] = 'other'
 }
+
+local function type()
+  return map[jit.os]
+end
+
+return { type = type }

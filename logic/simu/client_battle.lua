@@ -1,14 +1,26 @@
-_G.luvit_require = require
+local lfs = require("lfs")
+local _cwd = lfs.currentdir() -- must run in project dir
+
 local paths = {
     "?.lua",
-    "/Users/tony/Documents/project/bnb/server/logic/?.lua",
-    "/Users/tony/Documents/GitHub/server/rocks/?.lua",
-    "/Users/tony/Documents/GitHub/server/rocks/deps/?.lua",
-    "/Users/tony/Documents/GitHub/server/rocks/deps/?/init.lua"
+    _cwd .. "/logic/?.lua",
+    _cwd .. "?.lua",
+    _cwd .. "/deps/?.lua",
+    _cwd .. "/deps/?/init.lua"
 }
 for _, path in pairs(paths) do
     package.path = package.path .. ";" .. path
 end
+
+local cpaths = {
+    "/usr/lib/x86_64-linux-gnu/lua/5.1/?.so" --debian
+}
+for _, path in pairs(cpaths) do
+    package.cpath = package.cpath .. ";" .. path
+end
+
+_G.p = require("pretty-print").prettyPrint
+-- _G.print = _G.p
 
 local uv = require("uv")
 local msg = require("core/message")
@@ -21,8 +33,8 @@ local spack = require("spack")
 local signal = require("core/signal")
 local timer = require("core/timer")
 local net = require("net")
-protobuf.load("/Users/tony/Documents/project/bnb/server/logic/proto")
-msg.load("/Users/tony/Documents/project/bnb/server/logic/proto", "/Users/tony/Documents/project/bnb/server/logic/mod")
+protobuf.load(_cwd .. "/logic/proto")
+msg.load(_cwd .. "/logic/proto", _cwd .. "/logic/mod")
 
 signal.set(uv.stop)
 

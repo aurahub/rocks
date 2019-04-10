@@ -5,6 +5,7 @@ local rocks_deps = {
     "rapidjson",
     "deque",
     "luacrypto", -- luarocks install luacrypto OPENSSL_DIR=/usr/local/Cellar/openssl/1.0.2r/; --apt-get install libssl-dev
+    "openssl",
     "luajwt",
     "lbase64"
 }

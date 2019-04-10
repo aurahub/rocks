@@ -15,7 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-
 --[[
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
@@ -59,13 +58,11 @@ limitations under the License.
 // would be consumed, and then the rest would wait (un-transformed) until
 // the results of the previous transformed chunk were consumed.
 --]]
-
-local Duplex = require('./stream_duplex').Duplex
-local core = require('core')
+local Duplex = require("stream/stream_duplex").Duplex
+local core = require("core")
 local Error = core.Error
 
 local Transform = Duplex:extend()
-
 
 local TransformState = core.Object:extend()
 
@@ -89,7 +86,7 @@ function afterTransform(stream, er, data)
   local cb = ts.writecb
 
   if not cb then
-    return stream:emit('error', Error:new('no writecb in Transform class'))
+    return stream:emit("error", Error:new("no writecb in Transform class"))
   end
 
   ts.writechunk = nil
@@ -110,13 +107,11 @@ function afterTransform(stream, er, data)
   end
 end
 
-
 function Transform:initialize(options)
   --[[
   if (!(this instanceof Transform))
     return new Transform(options)
   --]]
-
   Duplex.initialize(self, options)
 
   self._transformState = TransformState:new(options, self)
@@ -138,15 +133,20 @@ function Transform:initialize(options)
   --]]
   self._readableState.sync = false
 
-  self:once('prefinish', function()
-    if type(self._flush) == 'function' then
-      self._flush(function(er)
-        done(stream, er)
-      end)
-    else
-      done(stream)
+  self:once(
+    "prefinish",
+    function()
+      if type(self._flush) == "function" then
+        self._flush(
+          function(er)
+            done(stream, er)
+          end
+        )
+      else
+        done(stream)
+      end
     end
-  end)
+  )
 end
 
 function Transform:push(chunk)
@@ -167,7 +167,7 @@ end
 // never call cb(), then you'll never get another chunk.
 --]]
 function Transform:_transform(chunk, cb)
-  error('not implemented')
+  error("not implemented")
 end
 
 function Transform:_write(chunk, cb)
@@ -176,9 +176,7 @@ function Transform:_write(chunk, cb)
   ts.writechunk = chunk
   if not ts.transforming then
     local rs = self._readableState
-    if ts.needTransform or
-        rs.needReadable or
-        rs.length < rs.highWaterMark then
+    if ts.needTransform or rs.needReadable or rs.length < rs.highWaterMark then
       self:_read(rs.highWaterMark)
     end
   end
@@ -204,10 +202,9 @@ function Transform:_read(n)
   end
 end
 
-
 function done(stream, er)
   if er then
-    return stream:emit('error', er)
+    return stream:emit("error", er)
   end
 
   --[[
@@ -218,14 +215,14 @@ function done(stream, er)
   local ts = stream._transformState
 
   if ws.length ~= 0 then
-    error('calling transform done when ws.length != 0')
+    error("calling transform done when ws.length != 0")
   end
 
   if ts.transforming then
-    error('calling transform done when still transforming')
+    error("calling transform done when still transforming")
   end
 
   return stream:push(nil)
 end
 
-return { Transform = Transform }
+return {Transform = Transform}

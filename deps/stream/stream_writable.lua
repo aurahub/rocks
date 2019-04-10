@@ -15,14 +15,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-
-local core = require('core')
-local Stream = require('./stream_core').Stream
+local core = require("core")
+local Stream = require("stream/stream_core").Stream
 local Error = core.Error
 
-local onwrite, writeAfterEnd, validChunk, writeOrBuffer, clearBuffer,
-  decodeChunk, doWrite, onwriteError, onwriteStateUpdate, needFinish,
-  afterWrite, finishMaybe, onwriteDrain, endWritable, prefinish
+local onwrite,
+  writeAfterEnd,
+  validChunk,
+  writeOrBuffer,
+  clearBuffer,
+  decodeChunk,
+  doWrite,
+  onwriteError,
+  onwriteStateUpdate,
+  needFinish,
+  afterWrite,
+  finishMaybe,
+  onwriteDrain,
+  endWritable,
+  prefinish
 
 local WriteReq = core.Object:extend()
 
@@ -30,7 +41,6 @@ function WriteReq:initialize(chunk, cb)
   self.chunk = chunk
   self.callback = cb
 end
-
 
 local WritableState = core.Object:extend()
 
@@ -41,10 +51,10 @@ function WritableState:initialize(options, stream)
   // object stream flag to indicate whether or not this stream
   // contains buffers or objects.
   --]]
-  self.objectMode = not not options.objectMode
+  self.objectMode = not (not options.objectMode)
 
-  if core.instanceof(stream, require('./stream_duplex').Duplex) then
-    self.objectMode = self.objectMode or not not options.writableObjectMode
+  if core.instanceof(stream, require("stream/stream_duplex").Duplex) then
+    self.objectMode = self.objectMode or not (not options.writableObjectMode)
   end
 
   --[[
@@ -65,7 +75,6 @@ function WritableState:initialize(options, stream)
   // cast to ints.
   this.highWaterMark = ~~this.highWaterMark
   --]]
-
   self.needDrain = false
   --[[
   // at the start of calling end()
@@ -87,7 +96,6 @@ function WritableState:initialize(options, stream)
   local noDecode = options.decodeStrings == false
   self.decodeStrings = not noDecode
   --]]
-
   --[[
   // not an actual buffer we keep track of, but a measurement
   // of how much we're waiting to get pushed to some underlying
@@ -157,7 +165,6 @@ function WritableState:initialize(options, stream)
   self.errorEmitted = false
 end
 
-
 local Writable = Stream:extend()
 
 function Writable:initialize(options)
@@ -167,10 +174,9 @@ function Writable:initialize(options)
   if (!(this instanceof Writable) && !(this instanceof Stream.Duplex))
     return new Writable(options)
   --]]
-
   self._writableState = WritableState:new(options, self)
 
-  if type(Stream.initialize) == 'function' then
+  if type(Stream.initialize) == "function" then
     Stream.initialize(self)
   end
 end
@@ -179,19 +185,20 @@ end
 // Otherwise people can pipe Writable streams, which is just wrong.
 --]]
 function Writable:pipe()
-  self:emit('error', Error:new('Cannot pipe. Not readable.'))
+  self:emit("error", Error:new("Cannot pipe. Not readable."))
 end
 
-
 function writeAfterEnd(stream, state, cb)
-  local er = Error:new('write after end')
+  local er = Error:new("write after end")
   --[[
   // TODO: defer error events consistently everywhere, not just the cb
   --]]
-  stream:emit('error', er)
-  process.nextTick(function()
-    cb(er)
-  end)
+  stream:emit("error", er)
+  process.nextTick(
+    function()
+      cb(er)
+    end
+  )
 end
 
 --[[
@@ -203,12 +210,14 @@ end
 --]]
 function validChunk(stream, state, chunk, cb)
   local valid = true
-  if chunk ~= nil and type(chunk) ~= 'string' and not state.objectMode then
-    local er = Error:new('Invalid non-string/buffer chunk')
-    stream:emit('error', er)
-    process.nextTick(function()
-      cb(er)
-    end)
+  if chunk ~= nil and type(chunk) ~= "string" and not state.objectMode then
+    local er = Error:new("Invalid non-string/buffer chunk")
+    stream:emit("error", er)
+    process.nextTick(
+      function()
+        cb(er)
+      end
+    )
     valid = false
   end
   return valid
@@ -218,8 +227,9 @@ function Writable:write(chunk, cb)
   local state = self._writableState
   local ret = false
 
-  if type(cb) ~= 'function' then
-    cb = function() end
+  if type(cb) ~= "function" then
+    cb = function()
+    end
   end
 
   if state.ended then
@@ -244,19 +254,17 @@ function Writable:uncork()
   if state.corked ~= 0 then
     state.corked = state.corked - 1
 
-    if not state.writing and
-        state.corked == 0 and
-        not state.finished and
-        not state.bufferProcessing and
-        table.getn(state.buffer) ~= 0 then
+    if
+      not state.writing and state.corked == 0 and not state.finished and not state.bufferProcessing and
+        table.getn(state.buffer) ~= 0
+     then
       clearBuffer(self, state)
     end
   end
 end
 
 function decodeChunk(state, chunk)
-
---[[
+  --[[
   if (!state.objectMode &&
       state.decodeStrings !== false &&
       util.isString(chunk)) {
@@ -318,17 +326,19 @@ end
 
 function onwriteError(stream, state, sync, er, cb)
   if sync then
-    process.nextTick(function()
-      state.pendingcb = state.pendingcb - 1
-      cb(er)
-    end)
+    process.nextTick(
+      function()
+        state.pendingcb = state.pendingcb - 1
+        cb(er)
+      end
+    )
   else
     state.pendingcb = state.pendingcb - 1
     cb(er)
   end
 
   stream._writableState.errorEmitted = true
-  stream:emit('error', er)
+  stream:emit("error", er)
 end
 
 function onwriteStateUpdate(state)
@@ -353,17 +363,16 @@ function onwrite(stream, er)
     --]]
     local finished = needFinish(stream, state)
 
-    if not finished and
-        state.corked == 0 and
-        not state.bufferProcessing and
-        table.getn(state.buffer) ~= 0 then
+    if not finished and state.corked == 0 and not state.bufferProcessing and table.getn(state.buffer) ~= 0 then
       clearBuffer(stream, state)
     end
 
     if sync then
-      process.nextTick(function()
-        afterWrite(stream, state, finished, cb)
-      end)
+      process.nextTick(
+        function()
+          afterWrite(stream, state, finished, cb)
+        end
+      )
     else
       afterWrite(stream, state, finished, cb)
     end
@@ -387,10 +396,9 @@ end
 function onwriteDrain(stream, state)
   if state.length == 0 and state.needDrain then
     state.needDrain = false
-    stream:emit('drain')
+    stream:emit("drain")
   end
 end
-
 
 --[[
 // if there's something in the buffer waiting, then process it
@@ -403,7 +411,7 @@ function clearBuffer(stream, state)
     // Fast case, write everything using _writev()
     --]]
     local cbs = {}
-    for c = 1,table.getn(state.buffer) do
+    for c = 1, table.getn(state.buffer) do
       table.insert(cbs, state.buffer[c].callback)
     end
 
@@ -412,12 +420,20 @@ function clearBuffer(stream, state)
     // TODO(isaacs) clean this up
     --]]
     state.pendingcb = state.pendingcb + 1
-    doWrite(stream, state, true, state.length, state.buffer, '', function(err)
-      for i = 1,table.getn(cbs) do
-        state.pendingcb = state.pendingcb - 1
-        cbs[i](err)
+    doWrite(
+      stream,
+      state,
+      true,
+      state.length,
+      state.buffer,
+      "",
+      function(err)
+        for i = 1, table.getn(cbs) do
+          state.pendingcb = state.pendingcb - 1
+          cbs[i](err)
+        end
       end
-    end)
+    )
 
     --[[
     // Clear buffer
@@ -436,7 +452,7 @@ function clearBuffer(stream, state)
       if state.objectMode then
         len = 1
       else
-        len =string.len(chunk)
+        len = string.len(chunk)
       end
 
       doWrite(stream, state, false, len, chunk, cb)
@@ -456,7 +472,7 @@ function clearBuffer(stream, state)
 
     if c <= table.getn(state.buffer) then
       -- node.js: state.buffer = state.buffer.slice(c)
-      for i=1,c-1 do
+      for i = 1, c - 1 do
         table.remove(state.buffer, 1)
       end
     else
@@ -468,7 +484,7 @@ function clearBuffer(stream, state)
 end
 
 function Writable:_write(chunk, cb)
-  cb(Error:new('not implemented'))
+  cb(Error:new("not implemented"))
 end
 
 Writable._writev = nil
@@ -476,7 +492,7 @@ Writable._writev = nil
 function Writable:_end(chunk, cb)
   local state = self._writableState
 
-  if type(chunk) == 'function' then
+  if type(chunk) == "function" then
     cb = chunk
     chunk = nil
   end
@@ -501,16 +517,15 @@ function Writable:_end(chunk, cb)
   end
 end
 
-
 function needFinish(stream, state)
-  return state.ending and state.length == 0 and table.getn(state.buffer) == 0 and
-  not state.finished and not state.writing
+  return state.ending and state.length == 0 and table.getn(state.buffer) == 0 and not state.finished and
+    not state.writing
 end
 
 function prefinish(stream, state)
   if not state.prefinished then
     state.prefinished = true
-    stream:emit('prefinish')
+    stream:emit("prefinish")
   end
 end
 
@@ -520,7 +535,7 @@ function finishMaybe(stream, state)
     if state.pendingcb == 0 then
       prefinish(stream, state)
       state.finished = true
-      stream:emit('finish')
+      stream:emit("finish")
     else
       prefinish(stream, state)
     end
@@ -535,15 +550,15 @@ function endWritable(stream, state, cb)
     if state.finished then
       process.nextTick(cb)
     else
-      stream:once('finish', cb)
+      stream:once("finish", cb)
     end
   end
   state.ended = true
-  stream:emit('end')
+  stream:emit("end")
 end
 
 return {
   WriteReq = WriteReq,
   WritableState = WritableState,
-  Writable = Writable,
+  Writable = Writable
 }

@@ -9,7 +9,7 @@
 --      The transaction pool is more like transaction in mysql.
 --      No caching procedure, so there's no need to fear about task failing.
 --      Upper logic need to lock db access for gettting transaction separated.
-local mongo = (luvit_require or require)("luvit-mongodb")
+local mongo = require("mongodb")
 
 local _instance
 
@@ -32,24 +32,24 @@ local function leave(conn)
 end
 
 local function create(host, port, dbname)
-    local conn = mongo:new({ host = host, port = port, dbname = dbname })
+    local conn = mongo:new({host = host, port = port, dbname = dbname})
     conn:on(
-    "connect",
-    function()
-        conn:on(
-        "error",
-        function(err)
-            print("[mongo]socket error", err, conn)
-            leave(conn)
-        end
-        )
-        conn:on(
-        "close",
+        "connect",
         function()
-            leave(conn)
+            conn:on(
+                "error",
+                function(err)
+                    print("[mongo]socket error", err, conn)
+                    leave(conn)
+                end
+            )
+            conn:on(
+                "close",
+                function()
+                    leave(conn)
+                end
+            )
         end
-        )
-    end
     )
     return conn
 end

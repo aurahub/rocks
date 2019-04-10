@@ -1,6 +1,6 @@
 local uv = require("uv")
 local spack = require("spack")
-local luvit_http = luvit_require("http")
+local luvit_http = require("http")
 
 local _mapping = {}
 
@@ -18,7 +18,9 @@ local function tcp(conf, user_accept, user_recv)
     end
 
     local function send(client, id, p)
-        if not client then return end
+        if not client then
+            return
+        end
         e, chunk = spack.send(_mapping[client], id, p)
         if e <= 0 then
             print("[network] when sending packet goes into exception, close the socket " .. tostring(client))

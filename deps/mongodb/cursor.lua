@@ -1,5 +1,5 @@
-local Emitter = require('core').Emitter
-local ObjectId= require ( "./objectId" ).ObjectId
+local Emitter = require("core").Emitter
+local ObjectId = require("mongodb/objectId").ObjectId
 local Cursor = Emitter:extend()
 
 function Cursor:initialize(collection, query, cb)
@@ -95,52 +95,66 @@ end
 
 function Cursor:_exec()
     if self.action == "COUNT" then
-        local cmd = {{"_order_", "count", self.collectionName}, {"_order_", "query", self.query} }
-        self.db:query("$cmd", cmd, nil, nil, 1, function(err, res)
-            if err then
-                self.cb(err, nil)
-                return
+        local cmd = {{"_order_", "count", self.collectionName}, {"_order_", "query", self.query}}
+        self.db:query(
+            "$cmd",
+            cmd,
+            nil,
+            nil,
+            1,
+            function(err, res)
+                if err then
+                    self.cb(err, nil)
+                    return
+                end
+                if res[1]["errmsg"] or res[1]["err"] then
+                    self.cb(res[1])
+                    return
+                end
+                self.cb(err, res[1].n)
             end
-            if res[1]["errmsg"] or res[1]["err"] then
-                self.cb(res[1])
-                return
-            end
-            self.cb(err, res[1].n)
-        end)
+        )
         return self
     end
     if self._sort then
         if self.query and not self.query["$query"] or not self.query then
-            self.query = {{"_order_", "$query", self.query}, {"_order_", "$orderby", self._sort} }
+            self.query = {{"_order_", "$query", self.query}, {"_order_", "$orderby", self._sort}}
         end
     end
-    self.db:find(self.collectionName, self.query, self._fields, self._skip, self._limit, function(err, res)
-        if self._update and self.action == "UPDATE" then
-            if next(res) == nil then
-                p("No result match: ", self.query, " for update")
-                self.cb(err, {})
-            else
-                local ids = {}
-                for _, v in pairs(res) do
-                    table.insert(ids, {_id = ObjectId(v._id)})
+    self.db:find(
+        self.collectionName,
+        self.query,
+        self._fields,
+        self._skip,
+        self._limit,
+        function(err, res)
+            if self._update and self.action == "UPDATE" then
+                if next(res) == nil then
+                    p("No result match: ", self.query, " for update")
+                    self.cb(err, {})
+                else
+                    local ids = {}
+                    for _, v in pairs(res) do
+                        table.insert(ids, {_id = ObjectId(v._id)})
+                    end
+                    self.db:update(self.collectionName, {["$or"] = ids}, self._update, nil, 1, self.cb)
                 end
-                self.db:update(self.collectionName, {["$or"]=ids}, self._update, nil, 1, self.cb)
-            end
-        elseif self.action == "REMOVE" then
-            if next(res) == nil then
-                p("No result match: ", self.query, " for remove")
-                self.cb(err, {})
-            else
-                local ids = {}
-                for _, v in pairs(res) do
-                    table.insert(ids, {_id = ObjectId(v._id)})
+            elseif self.action == "REMOVE" then
+                if next(res) == nil then
+                    p("No result match: ", self.query, " for remove")
+                    self.cb(err, {})
+                else
+                    local ids = {}
+                    for _, v in pairs(res) do
+                        table.insert(ids, {_id = ObjectId(v._id)})
+                    end
+                    self.db:remove(self.collectionName, {["$or"] = ids}, nil, self.cb)
                 end
-                self.db:remove(self.collectionName, {["$or"]=ids}, nil, self.cb)
+            else
+                self.cb(err, res)
             end
-        else
-            self.cb(err, res)
         end
-    end)
+    )
 end
 
 function Cursor:exec(cb)

@@ -15,12 +15,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-return {
-  Stream = require("stream/stream_core").Stream,
-  Writable = require("stream/stream_writable").Writable,
-  Transform = require("stream/stream_transform").Transform,
-  Readable = require("stream/stream_readable").Readable,
-  PassThrough = require("stream/stream_passthrough").PassThrough,
-  Observable = require("stream/stream_observable").Observable,
-  Duplex = require("stream/stream_duplex").Duplex
-}
+local los = require("los")
+local path_base = require("stream/base")
+
+local function setup_meta(ospath)
+  local path = {}
+  path._internal = ospath
+  setmetatable(
+    path,
+    {
+      __index = function(_, key)
+        if type(path._internal[key]) == "function" then
+          return function(...)
+            return path._internal[key](path._internal, ...)
+          end
+        else
+          return path._internal:_get(key)
+        end
+      end
+    }
+  )
+  return path
+end
+
+if los.type() == "win32" then
+  return setup_meta(path_base.nt)
+else
+  return setup_meta(path_base.posix)
+end
