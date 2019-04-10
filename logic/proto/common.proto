@@ -1,9 +1,0 @@
-message common_heartbeat_request // {mod = 0, msg = 1}
-{
-  optional int32 time = 1;
-};
-
-message common_heartbeat_response // {mod = 0, msg = 2}
-{
-  optional int32 time = 1;
-};
