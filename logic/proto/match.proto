@@ -1,0 +1,35 @@
+message match_auth_request // {mod = 5, msg = 0}
+{
+  required string token = 1;
+  required string match_id = 2;
+}
+
+message match_auth_response // {mod = 5, msg = 1}
+{
+  optional int32 err = 1;
+  optional string msg = 2;
+}
+
+message match_playerstate_struct {
+  required int32 player_id = 1;
+  required int32 object_id = 2;
+  required int32 pos_x = 3;
+  required int32 pos_y = 4;
+  required int32 forward = 5;
+}
+
+message match_frame_request // {mod = 5, msg = 2}
+{
+  required int32 pos_x = 1;
+  required int32 pos_y = 2;
+  required int32 forward = 3;
+}
+
+message match_frame_notice // {mod = 5, msg = 3}
+{
+  required int32 clock = 1;
+  repeated match_playerstate_struct player_state = 2;
+};
+
+message match_stop_notice // {mod = 5, msg = 4}
+{};
