@@ -15,9 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-local core = require("core")
-local utils = require("utils")
-local Stream = require("stream/stream_core").Stream
+
+local core = require('core')
+local utils = require('utils')
+local Stream = require('./stream_core').Stream
 local Error = core.Error
 
 local ReadableState = core.Object:extend()
@@ -66,11 +67,12 @@ function ReadableState:initialize(options, stream)
   // object stream flag. Used to make read(n) ignore n and to
   // make all the buffer merging and length checks go away
   --]]
-  self.objectMode = not (not options.objectMode)
+  self.objectMode = not not options.objectMode
 
   if core.instanceof(stream, Stream.Duplex) then
-    self.objectMode = self.objectMode or (not (not options.readableObjectMode))
+    self.objectMode = self.objectMode or (not not options.readableObjectMode)
   end
+
 
   --[[
   // Crypto is kind of old and crusty.  Historically, its default string
@@ -99,29 +101,18 @@ function ReadableState:initialize(options, stream)
   -- implemented in luvit
 end
 
+
+
 local Readable = Stream:extend()
-local len,
-  readableAddChunk,
-  chunkInvalid,
-  onEofChunk,
-  emitReadable,
-  maybeReadMore,
-  needMoreData,
-  roundUpToNextPowerOf2,
-  howMuchToRead,
-  endReadable,
-  fromList,
-  emitReadable_,
-  flow,
-  maybeReadMore_,
-  resume,
-  resume_,
-  pipeOnDrain
+local len, readableAddChunk, chunkInvalid, onEofChunk, emitReadable,
+  maybeReadMore, needMoreData, roundUpToNextPowerOf2, howMuchToRead,
+  endReadable, fromList, emitReadable_, flow, maybeReadMore_, resume,
+  resume_, pipeOnDrain
 
 function len(buf)
-  if type(buf) == "string" then
+  if type(buf) == 'string' then
     return string.len(buf)
-  elseif type(buf) == "table" then
+  elseif type(buf) == 'table' then
     return table.getn(buf)
   else
     return -1
@@ -130,7 +121,7 @@ end
 
 function Readable:initialize(options)
   self._readableState = ReadableState:new(options, self)
-  if type(Stream.initialize) == "function" then
+  if type(Stream.initialize) == 'function' then
     Stream.initialize(self)
   end
 end
@@ -153,13 +144,13 @@ end
 // Unshift should *always* be something directly out of read()
 --]]
 function Readable:unshift(chunk)
-  return readableAddChunk(self, self._readableState, chunk, "", true)
+  return readableAddChunk(self, self._readableState, chunk, '', true)
 end
 
 function readableAddChunk(stream, state, chunk, addToFront)
   local er = chunkInvalid(state, chunk)
   if er then
-    stream:emit("error", er)
+    stream:emit('error', er)
   elseif chunk == nil then
     state.reading = false
     if not state.ended then
@@ -167,8 +158,8 @@ function readableAddChunk(stream, state, chunk, addToFront)
     end
   elseif state.objectMode or chunk and len(chunk) > 0 then
     if state.ended and not addToFront then
-      local e = Error:new("stream.push() after EOF")
-      stream:emit("error", e)
+      local e = Error:new('stream.push() after EOF')
+      stream:emit('error', e)
     else
       if not addToFront then
         state.reading = false
@@ -178,7 +169,7 @@ function readableAddChunk(stream, state, chunk, addToFront)
       // if we want the data now, just emit it.
       --]]
       if state.flowing and state.length == 0 and not state.sync then
-        stream:emit("data", chunk)
+        stream:emit('data', chunk)
         stream:read(0)
       else
         --[[
@@ -192,7 +183,7 @@ function readableAddChunk(stream, state, chunk, addToFront)
         if addToFront then
           table.insert(state.buffer, 1, chunk)
         else
-          table.insert(state.buffer, chunk)
+          table.insert(state.buffer,chunk)
         end
 
         if state.needReadable then
@@ -217,7 +208,8 @@ end
 // 'readable' event will be triggered.
 --]]
 function needMoreData(state)
-  return not state.ended and (state.needReadable or state.length < state.highWaterMark or state.length == 0)
+  return not state.ended and
+  (state.needReadable or state.length < state.highWaterMark or state.length == 0)
 end
 
 --[[
@@ -294,7 +286,7 @@ function Readable:read(n)
   local state = self._readableState
   local nOrig = n
 
-  if type(n) ~= "number" or n > 0 then
+  if type(n) ~= 'number' or n > 0 then
     state.emittedReadable = false
   end
 
@@ -303,7 +295,7 @@ function Readable:read(n)
   // already have a bunch of data in the buffer, then just trigger
   // the 'readable' event and move on.
   --]]
-  if n == 0 and state.needReadable and (state.length >= state.highWaterMark or state.ended) then
+  if n ==0 and state.needReadable and (state.length >= state.highWaterMark or state.ended) then
     if state.length == 0 and state.ended then
       endReadable(self)
     else
@@ -347,6 +339,7 @@ function Readable:read(n)
   //
   // 3. Actually pull the requested chunks out of the buffer and return.
   --]]
+
   --[[
   // if we need a readable event, then we need to do some reading.
   --]]
@@ -420,7 +413,7 @@ function Readable:read(n)
   end
 
   if ret ~= nil then
-    self:emit("data", ret)
+    self:emit('data', ret)
   end
 
   return ret
@@ -428,8 +421,10 @@ end
 
 function chunkInvalid(state, chunk)
   local er = nil
-  if type(chunk) ~= "string" and chunk and not state.objectMode then
-    er = Error:new("Invalid non-string/buffer chunk")
+  if type(chunk) ~= 'string' and
+    chunk and
+    not state.objectMode then
+    er = Error:new('Invalid non-string/buffer chunk')
   end
   return er
 end
@@ -454,11 +449,9 @@ function emitReadable(stream)
   if not state.emittedReadable then
     state.emittedReadable = true
     if state.sync then
-      process.nextTick(
-        function()
-          emitReadable_(stream)
-        end
-      )
+      process.nextTick(function()
+        emitReadable_(stream)
+      end)
     else
       emitReadable_(stream)
     end
@@ -466,9 +459,10 @@ function emitReadable(stream)
 end
 
 function emitReadable_(stream)
-  stream:emit("readable")
+  stream:emit('readable')
   flow(stream)
 end
+
 
 --[[
 // at this point, the user has presumably seen the 'readable' event,
@@ -481,17 +475,16 @@ end
 function maybeReadMore(stream, state)
   if not state.readingMore then
     state.readingMore = true
-    process.nextTick(
-      function()
-        maybeReadMore_(stream, state)
-      end
-    )
+    process.nextTick(function()
+      maybeReadMore_(stream, state)
+    end)
   end
 end
 
 function maybeReadMore_(stream, state)
   local len = state.length
-  while not state.reading and not state.flowing and not state.ended and state.length < state.highWaterMark do
+  while not state.reading and not state.flowing and not state.ended and
+    state.length < state.highWaterMark do
     stream:read(0)
     if len == state.length then
       --[[
@@ -512,7 +505,7 @@ end
 // arbitrary, and perhaps not very meaningful.
 --]]
 function Readable:_read(n)
-  self:emit("error", Error:new("not implemented"))
+  self:emit('error', Error:new('not implemented'))
 end
 
 function Readable:pipe(dest, pipeOpts)
@@ -529,7 +522,7 @@ function Readable:pipe(dest, pipeOpts)
     end
   end
 
-  onend = function()
+  onend = function ()
     dest:_end()
   end
 
@@ -537,14 +530,14 @@ function Readable:pipe(dest, pipeOpts)
     --[[
     // cleanup event handlers once the pipe is broken
     --]]
-    dest:removeListener("close", onclose)
-    dest:removeListener("finish", onfinish)
-    dest:removeListener("drain", ondrain)
-    dest:removeListener("error", onerror)
-    dest:removeListener("unpipe", onunpipe)
-    src:removeListener("end", onend)
-    src:removeListener("end", cleanup)
-    src:removeListener("data", ondata)
+    dest:removeListener('close', onclose)
+    dest:removeListener('finish', onfinish)
+    dest:removeListener('drain', ondrain)
+    dest:removeListener('error', onerror)
+    dest:removeListener('unpipe', onunpipe)
+    src:removeListener('end', onend)
+    src:removeListener('end', cleanup)
+    src:removeListener('data', ondata)
 
     --[[
     // if the reader is waiting for a drain event from this
@@ -553,7 +546,8 @@ function Readable:pipe(dest, pipeOpts)
     // So, if this is awaiting a drain, then we just call it now.
     // If we don't know, then assume that we are waiting for one.
     --]]
-    if state.awaitDrain and (not dest._writableState or dest._writableState.needDrain) then
+    if state.awaitDrain and
+      (not dest._writableState or dest._writableState.needDrain) then
       ondrain()
     end
   end
@@ -572,9 +566,9 @@ function Readable:pipe(dest, pipeOpts)
   --]]
   onerror = function(er)
     unpipe()
-    dest:removeListener("error", onerror)
-    if core.Emitter.listenerCount(dest, "error") == 0 then
-      dest:emit("error", er)
+    dest:removeListener('error', onerror)
+    if core.Emitter.listenerCount(dest, 'error') == 0 then
+      dest:emit('error', er)
     end
   end
 
@@ -582,18 +576,20 @@ function Readable:pipe(dest, pipeOpts)
   // Both close and finish should trigger unpipe, but only once.
   --]]
   onclose = function()
-    dest:removeListener("finish", onfinish)
+    dest:removeListener('finish', onfinish)
     unpipe()
   end
 
   onfinish = function()
-    dest:removeListener("close", onclose)
+    dest:removeListener('close', onclose)
     unpipe()
   end
 
   unpipe = function()
     src:unpipe(dest)
   end
+
+
 
   if state.pipesCount == 0 then
     state.pipes = dest
@@ -604,7 +600,8 @@ function Readable:pipe(dest, pipeOpts)
   end
   state.pipesCount = state.pipesCount + 1
 
-  local doEnd = (not pipeOpts or pipeOpts._end ~= false) and dest ~= process.stdout and dest ~= process.stderr
+  local doEnd = (not pipeOpts or pipeOpts._end ~= false) and dest ~=
+  process.stdout and dest ~= process.stderr
 
   if doEnd then
     _endFn = onend
@@ -615,10 +612,10 @@ function Readable:pipe(dest, pipeOpts)
   if state.endEmitted then
     process.nextTick(_endFn)
   else
-    src:once("end", _endFn)
+    src:once('end', _endFn)
   end
 
-  dest:on("unpipe", onunpipe)
+  dest:on('unpipe', onunpipe)
 
   --[[
   // when the dest drains, it reduces the awaitDrain counter
@@ -627,9 +624,9 @@ function Readable:pipe(dest, pipeOpts)
   // too slow.
   --]]
   ondrain = pipeOnDrain(src)
-  dest:on("drain", ondrain)
+  dest:on('drain', ondrain)
 
-  src:on("data", ondata)
+  src:on('data', ondata)
 
   --[[
   // This is a brutally ugly hack to make sure that our error handler
@@ -641,13 +638,14 @@ function Readable:pipe(dest, pipeOpts)
   else
   dest._events.error = [onerror, dest._events.error];
   --]]
-  dest:once("close", onclose)
-  dest:once("finish", onfinish)
+
+  dest:once('close', onclose)
+  dest:once('finish', onfinish)
 
   --[[
   // tell the dest that it's being piped to
   --]]
-  dest:emit("pipe", src)
+  dest:emit('pipe', src)
 
   --[[
   // start the flow if it hasn't been started already.
@@ -665,12 +663,13 @@ function pipeOnDrain(src)
     if state.awaitDrain ~= 0 then
       state.awaitDrain = state.awaitDrain - 1
     end
-    if state.awaitDrain == 0 and core.Emitter.listenerCount(src, "data") ~= 0 then
+    if state.awaitDrain == 0 and core.Emitter.listenerCount(src, 'data') ~= 0 then
       state.flowing = true
       flow(src)
     end
   end
 end
+
 
 function Readable:unpipe(dest)
   local state = self._readableState
@@ -704,7 +703,7 @@ function Readable:unpipe(dest)
     state.pipesCount = 0
     state.flowing = false
     if dest then
-      dest:emit("unpipe", self)
+      dest:emit('unpipe', self)
     end
     return self
   end
@@ -712,6 +711,7 @@ function Readable:unpipe(dest)
   --[[
   // slow case. multiple pipe destinations.
   --]]
+
   if not dest then
     --[[
     // remove all.
@@ -722,8 +722,8 @@ function Readable:unpipe(dest)
     state.pipesCount = 0
     state.flowing = false
 
-    for i = 1, len, 1 do
-      dests[i]:emit("unpipe", self)
+    for i = 1,len,1 do
+      dests[i]:emit('unpipe', self)
     end
     return self
   end
@@ -747,7 +747,7 @@ function Readable:unpipe(dest)
     state.pipes = state.pipes[1]
   end
 
-  dest:emit("unpipe", self)
+  dest:emit('unpipe', self)
 
   return self
 end
@@ -763,11 +763,11 @@ function Readable:on(ev, fn)
   // If listening to data, and it has not explicitly been paused,
   // then call resume to start the flow of data on the next tick.
   --]]
-  if ev == "data" and false ~= self._readableState.flowing then
+  if ev == 'data' and false ~= self._readableState.flowing then
     self:resume()
   end
 
-  if ev == "readable" and self.readable then
+  if ev == 'readable' and self.readable then
     local state = self._readableState
     if not state.readableListening then
       state.readableListening = true
@@ -775,11 +775,9 @@ function Readable:on(ev, fn)
       state.needReadable = true
       if not state.reading then
         local _self = self
-        process.nextTick(
-          function()
-            _self:read(0)
-          end
-        )
+        process.nextTick(function()
+          _self:read(0)
+        end)
       elseif state.length then
         emitReadable(self, state)
       end
@@ -809,17 +807,15 @@ end
 function resume(stream, state)
   if not state.resumeScheduled then
     state.resumeScheduled = true
-    process.nextTick(
-      function()
-        resume_(stream, state)
-      end
-    )
+    process.nextTick(function()
+      resume_(stream, state)
+    end)
   end
 end
 
 function resume_(stream, state)
   state.resumeScheduled = false
-  stream:emit("resume")
+  stream:emit('resume')
   flow(stream)
   if state.flowing and not state.reading then
     stream:read(0)
@@ -829,7 +825,7 @@ end
 function Readable:pause()
   if false ~= self._readableState.flowing then
     self._readableState.flowing = false
-    self:emit("pause")
+    self:emit('pause')
   end
   return self
 end
@@ -853,35 +849,29 @@ function Readable:wrap(stream)
   local state = self._readableState
   local paused = false
 
-  stream:on(
-    "end",
-    function()
-      self:emit("end")
-      self:push(nil)
-    end
-  )
+  stream:on('end', function()
+    self:emit('end')
+    self:push(nil)
+  end)
 
-  stream:on(
-    "data",
-    function(chunk)
-      if chunk == nil or not state.objectMode and len(chunk) == 0 then
-        return
-      end
-
-      local ret = self:push(chunk)
-      if not ret then
-        paused = true
-        stream:pause()
-      end
+  stream:on('data', function(chunk)
+    if chunk == nil or not state.objectMode and len(chunk) == 0 then
+      return
     end
-  )
+
+    local ret = self:push(chunk)
+    if not ret then
+      paused = true
+      stream:pause()
+    end
+  end)
 
   --[[
   // proxy all the other methods.
   // important when wrapping filters and duplexes.
   --]]
   for i in pairs(stream) do
-    if ("function" == type(stream[i]) and self[i] == nil) then
+    if ('function' == type(stream[i]) and self[i] == nil) then
       self[i] = stream[i]
     end
   end
@@ -889,8 +879,8 @@ function Readable:wrap(stream)
   --[[
   // proxy certain important events.
   --]]
-  local events = {"error", "close", "destroy", "pause", "resume"}
-  for k, v in pairs(events) do
+  local events = {'error', 'close', 'destroy', 'pause', 'resume'}
+  for k,v in pairs(events) do
     stream:on(v, utils.bind(self.emit, self, v))
   end
 
@@ -908,6 +898,8 @@ function Readable:wrap(stream)
   return self
 end
 
+
+
 --[[
 // Pluck off n bytes from an array of buffers.
 // Length is the combined lengths of all the buffers in the list.
@@ -915,7 +907,7 @@ end
 function fromList(n, state)
   local list = state.buffer
   local length = state.length
-  local objectMode = not (not state.objectMode)
+  local objectMode = not not state.objectMode
   local ret
 
   --[[
@@ -930,7 +922,7 @@ function fromList(n, state)
   elseif objectMode then
     ret = table.remove(list, 1)
   elseif not n or n >= length then
-    ret = table.concat(list, "")
+    ret = table.concat(list, '')
     state.buffer = {}
   else
     --[[
@@ -943,8 +935,8 @@ function fromList(n, state)
       --]]
       local buf = list[1]
 
-      ret = string.sub(buf, 1, n)
-      list[1] = string.sub(buf, n + 1, -1)
+      ret = string.sub(buf,1,n)
+      list[1] = string.sub(buf,n+1, -1)
     elseif n == len(list[1]) then
       --[[
       // first list is a perfect match
@@ -955,18 +947,19 @@ function fromList(n, state)
       // complex case.
       // we have enough to cover it, but it spans past the first buffer.
       --]]
+
       -- for better GC efficiency. (http://www.lua.org/pil/11.6.html)
       local tmp = {}
       local c = 0
-      for i = 1, len(list), 1 do
+      for i=1,len(list),1 do
         if n - c >= len(list[1]) then
           -- grab the entire list[1]
-          c = c + list[1]
+          c = c+ list[1]
           table.insert(tmp, table.remove(list, 1))
         else
           c = n
-          table.insert(tmp, string.sub(list[1], 1, n - c))
-          list[1] = string.sub(list[1], n + 1, -1)
+          table.insert(tmp, string.sub(list[1], 1, n-c))
+          list[1] = string.sub(list[1], n+1, -1)
           break
         end
       end
@@ -989,27 +982,25 @@ function endReadable(stream)
   // bug in node.  Should never happen.
   --]]
   if state.length > 0 then
-    error("endReadable called on non-empty stream")
+    error('endReadable called on non-empty stream')
   end
 
   if not state.endEmitted then
     state.ended = true
-    process.nextTick(
-      function()
-        --[[
+    process.nextTick(function()
+      --[[
       // Check that we didn't get one last unshift.
       --]]
-        if not state.endEmitted and state.length == 0 then
-          state.endEmitted = true
-          stream.readable = false
-          stream:emit("end")
-        end
+      if not state.endEmitted and state.length == 0 then
+        state.endEmitted = true
+        stream.readable = false
+        stream:emit('end')
       end
-    )
+    end)
   end
 end
 
 return {
   Readable = Readable,
-  ReadableState = ReadableState
+  ReadableState = ReadableState,
 }

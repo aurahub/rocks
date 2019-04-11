@@ -15,21 +15,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-local loaded = pcall(require, "openssl")
-if not loaded then
-  return
-end
 
-local _common_tls = require("stream/common")
-local net = require("net")
+local loaded = pcall(require, 'openssl')
+if not loaded then return end
+
+local _common_tls = require('./common')
+local net = require('net')
 
 local DEFAULT_CIPHERS = _common_tls.DEFAULT_CIPHERS
 
 local extend = function(...)
   local args = {...}
   local obj = args[1]
-  for i = 2, #args do
-    for k, v in pairs(args[i]) do
+  for i=2, #args do
+    for k,v in pairs(args[i]) do
       obj[k] = v
     end
   end
@@ -42,39 +41,25 @@ function Server:init(options, connectionListener)
   options.server = true
 
   local sharedCreds = _common_tls.createCredentials(options)
-  net.Server.init(
-    self,
-    options,
-    function(raw_socket)
-      local socket
-      socket =
-        _common_tls.TLSSocket:new(
-        raw_socket,
-        {
-          secureContext = sharedCreds,
-          isServer = true,
-          requestCert = options.requestCert,
-          rejectUnauthorized = options.rejectUnauthorized
-        }
-      )
-      socket:on(
-        "secureConnection",
-        function()
-          connectionListener(socket)
-        end
-      )
-      socket:on(
-        "error",
-        function(err)
-          connectionListener(socket, err)
-        end
-      )
-      self.socket = socket
-      if self.sni_hosts then
-        socket:sni(self.sni_hosts)
-      end
+  net.Server.init(self, options, function(raw_socket)
+    local socket
+    socket = _common_tls.TLSSocket:new(raw_socket, {
+      secureContext = sharedCreds,
+      isServer = true,
+      requestCert = options.requestCert,
+      rejectUnauthorized = options.rejectUnauthorized,
+    })
+    socket:on('secureConnection', function()
+      connectionListener(socket)
+    end)
+    socket:on('error',function(err)
+      connectionListener(socket,err)
+    end)
+    self.socket = socket
+    if self.sni_hosts then
+      socket:sni(self.sni_hosts)
     end
-  )
+  end)
 end
 
 function Server:sni(hosts)
@@ -83,21 +68,20 @@ end
 
 local DEFAULT_OPTIONS = {
   ciphers = DEFAULT_CIPHERS,
-  rejectUnauthorized = true
+  rejectUnauthorized = true,
   -- TODO checkServerIdentity
 }
 
 local function connect(options, callback)
   local hostname, port, sock, colon
 
-  callback = callback or function()
-    end
+  callback = callback or function() end
   options = extend({}, DEFAULT_OPTIONS, options or {})
   port = options.port
   hostname = options.host or options.hostname
-  colon = hostname:find(":")
+  colon = hostname:find(':')
   if colon then
-    hostname = hostname:sub(1, colon - 1)
+    hostname = hostname:sub(1, colon-1 )
   end
 
   sock = _common_tls.TLSSocket:new(nil, options)
@@ -115,8 +99,9 @@ return {
   DEFAULT_SECUREPROTOCOL = _common_tls.DEFAULT_SECUREPROTOCOL,
   isLibreSSL = _common_tls.isLibreSSL,
   isTLSv1_3 = _common_tls.isTLSv1_3,
+
   TLSSocket = _common_tls.TLSSocket,
   createCredentials = _common_tls.createCredentials,
   connect = connect,
-  createServer = createServer
+  createServer = createServer,
 }

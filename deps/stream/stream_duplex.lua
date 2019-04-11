@@ -15,16 +15,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-local utils = require("utils")
-local Readable = require("stream/stream_readable").Readable
-local Writable = require("stream/stream_writable").Writable
+local utils = require('utils')
+local Readable = require('./stream_readable').Readable
+local Writable = require('./stream_writable').Writable
 
 local Duplex = Readable:extend()
 
 local onend
 
-for k, v in pairs(Writable) do
-  if not Duplex[k] and k ~= "meta" then
+for k,v in pairs(Writable) do
+  if not Duplex[k] and k ~= 'meta' then
     Duplex[k] = v
   end
 end
@@ -34,6 +34,7 @@ function Duplex:initialize(options)
   if (!(this instanceof Duplex))
     return new Duplex(options);
   --]]
+
   Readable.initialize(self, options)
   Writable.initialize(self, options)
 
@@ -50,7 +51,7 @@ function Duplex:initialize(options)
     self.allowHalfOpen = false
   end
 
-  self:once("end", utils.bind(onend, self))
+  self:once('end', utils.bind(onend, self))
 end
 
 --[[
@@ -72,4 +73,4 @@ function onend(self)
   process.nextTick(utils.bind(self._end, self))
 end
 
-return {Duplex = Duplex}
+return { Duplex = Duplex }
