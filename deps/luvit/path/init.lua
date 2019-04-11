@@ -15,26 +15,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 --]]
-local los = require("los")
-local path_base = require("stream/base")
+
+local los = require('los')
+local path_base = require('./base')
 
 local function setup_meta(ospath)
   local path = {}
   path._internal = ospath
-  setmetatable(
-    path,
-    {
-      __index = function(_, key)
-        if type(path._internal[key]) == "function" then
-          return function(...)
-            return path._internal[key](path._internal, ...)
-          end
-        else
-          return path._internal:_get(key)
-        end
+  setmetatable(path, {__index = function(_, key)
+    if type(path._internal[key]) == 'function' then
+      return function(...)
+        return path._internal[key](path._internal, ...)
       end
-    }
-  )
+    else
+      return path._internal:_get(key)
+    end
+  end
+  })
   return path
 end
 
