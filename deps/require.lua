@@ -34,8 +34,9 @@ local uv = require('uv')
 
 local realRequire = _G.require
 
-local tmpBase = os == "Windows" and (env.get("TMP") or uv.cwd()) or
-                                    (env.get("TMPDIR") or '/tmp')
+local tmpBase = os == "Windows" and (env.get("TMP") or uv.cwd()) or 
+                                    -- (env.get("TMPDIR") or '/tmp') --may crash
+                                    '/tmp'
 local binExt = os == "Windows" and ".dll" or ".so"
 
 -- Package sources
