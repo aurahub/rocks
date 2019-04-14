@@ -1,7 +1,6 @@
-local var = require("var")
 local uv = require("uv")
 local spack = require("spack")
-local http = var.require_bundle("http")
+local http = require_bundle("http")
 
 local _mapping = {}
 

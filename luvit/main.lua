@@ -9,6 +9,7 @@ return require("./init")(
         var.free_unclosed = false
         var.require = _G.require
         var.require_bundle = require
+        _G.require_bundle = require
 
         var.entry()
     end,
