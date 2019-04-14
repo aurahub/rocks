@@ -17,15 +17,15 @@ end
     apt-get install curl
     apt-get install luarocks
 
-    apt-get install libssl1.0-dev
+    apt-get install libssl-dev
     apt-get install libjemalloc-dev
     apt-get install libboost-all-dev
     apt-get install libghc-pcre-light-dev
     apt-get install zlib1g-dev
+    apt-get install libuv1-dev
 
     luarocks install luv
     luarocks install lua-cjson
-    luarocks install lua-zlib
     luarocks install luasocket
     luarocks install lua-protobuf
     luarocks install luafilesystem
@@ -43,4 +43,5 @@ end
 
 docker stop rocks;docker rm rocks;docker run -d -p 10000:10000 -p 10080:10080 --name rocks --hostname rocks -v /C/Users/Administrator/Documents/data:/data --link 357c133ae4a4:mongo -w /data/server/ rocks luajit logic/server.lua
 docker stop rocks;docker rm rocks;docker run -it -p 10000:10000 -p 10080:10080 --name rocks --hostname rocks -v /C/Users/Administrator/Documents/data:/data --link 357c133ae4a4:mongo rocks /bin/bash
+
 ]]

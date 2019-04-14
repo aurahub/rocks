@@ -18,10 +18,12 @@ var.entry = function()
     var.require("engine/init")(
         {
             tcp = {
-                port = 10001
+                port = 10000
             },
-            proto_path = _cwd .. "/logic/proto",
-            mod_path = _cwd .. "/logic/mod"
+            mongo = {
+                host = "mongo",
+                port = 27017,
+            },
         }
     )
 end
