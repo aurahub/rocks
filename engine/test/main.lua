@@ -1,14 +1,12 @@
-local lfs = require("lfs")
-local _cwd = lfs.currentdir() -- must run in project dir
+local _cwd = require("uv").cwd()
 
 local paths = {
     "?.lua",
     _cwd .. "?.lua",
-    _cwd .. "/logic/?.lua",
-    _cwd .. "/engine/?.lua",
-    _cwd .. "/deps/?.lua"
-    -- _cwd .. "/deps/?/init.lua",
-    -- _cwd .. "/deps/luvit/?.lua"
+    -- _cwd .. "/logic/?.lua",
+    -- _cwd .. "/engine/?.lua",
+    _cwd .. "/deps/?.lua",
+    _cwd .. "/luvi/?.lua",
 }
 for _, path in pairs(paths) do
     package.path = package.path .. ";" .. path
@@ -23,5 +21,8 @@ end
 
 -- local mainRequire = require('require')("bundle:main.lua")
 -- _G.p = mainRequire("pretty-print").prettyPrint
-
-require("init")({[0] = "luajit",[1] = "deps/luvit-mongodb"})
+print(require("luvi/init"))
+require("luvi/init")({[0] = "luajit", [1] = "."})
+for k, v in pairs(package.loaded) do
+    print(k, v)
+end

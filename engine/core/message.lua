@@ -1,6 +1,6 @@
 local lfs = require("lfs")
-local url = require("util/url")
-local P = require("util/print")
+local url = require("utils/url")
+local P = require("utils/print")
 
 local _mapping = {}
 local _handlers = {}
@@ -71,7 +71,7 @@ local function prepare_handlers(parts)
     if #info >= 3 then
         local m, f, t = info[1], info[2], info[3]
         local reg = function()
-            local mod = require("" .. _mod_prefix .. "/" .. m)
+            local mod = _G.require("" .. _mod_prefix .. "/" .. m)
             if type(mod) ~= "table" then
                 print("----------------------------------------")
                 print("[error] module is not well preformed for message:\n", name)
@@ -94,7 +94,7 @@ local function prepare_handlers(parts)
         end
         local error = function(...)
             print("----------------------------------------")
-            print("[error] require module exception:\n", name)
+            print("[error] req module exception:\n", name)
             print(...)
             print(debug.traceback())
             print("----------------------------------------")

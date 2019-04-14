@@ -315,7 +315,7 @@ local function commonBundle(bundlePaths, mainPath, args)
   end
 
   function bundle.register(name, path)
-    if not path then path = name + ".lua" end
+    if not path then path = name .. ".lua" end
     package.preload[name] = function (...)
       local lua = assert(bundle.readfile(path))
       return assert(loadstring(lua, "bundle:" .. path))(...)

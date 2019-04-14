@@ -4,13 +4,13 @@ local timer = require("core/timer")
 local msg = require("core/message")
 local protobuf = require("core/protobuf")
 local signal = require("core/signal")
--- local mongo = require("core/mongo")
+local mongo = require("core/mongo")
 local async = require("core/async")
 local socket = require("socket")
 local json = require("rapidjson")
 local base64 = require("base64")
-local url = require("util/url")
-local jwt = require("util/jwt")
+local url = require("utils/url")
+local jwt = require("utils/jwt")
 local json = require("rapidjson")
 
 local _conf = {
@@ -204,15 +204,13 @@ local function run(conf)
     msg.load(_conf.proto_path, _conf.mod_path)
     init_ser(_conf.serialization)
 
-    net_send, net_close = network.tcp(_conf.tcp, accept, recv)
-    -- mongo.init(_conf.mongo)
-    -- timer.add(_conf.mongo.fill_interval, mongo.fill)
+    net_send, net_close = network.tcp_server(_conf.tcp, accept, recv)
+    mongo.init(_conf.mongo)
+    timer.add(_conf.mongo.fill_interval, mongo.fill)
+
+    network.http_server(_conf.http, on_request)
 
     signal.set(uv.stop)
-    network.http(_conf.http, on_request)
-    uv.run()
 end
 
-return {
-    run = run
-}
+return run

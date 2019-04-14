@@ -1,5 +1,5 @@
 pb = require "core/protobuf"
-require "util/print"
+require "utils/print"
 require "base64"
 
 pb.load("logic/proto")

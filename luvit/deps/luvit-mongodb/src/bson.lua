@@ -108,8 +108,6 @@ function Date(value)
     return setmetatable({ value = value }, date_meta)
 end
 
-p(Date())
-
 local ll = require("./utils")
 local le_uint_to_num = ll.le_uint_to_num
 local le_int_to_num = ll.le_int_to_num

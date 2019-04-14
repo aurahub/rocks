@@ -1,4 +1,4 @@
-local uv = require("uv")
+local uv = _G.require("uv")
 local deque = require("deque")
 
 local _res = {}

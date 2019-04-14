@@ -4,7 +4,7 @@ package.path =
         ";/Users/tony/Documents/GitHub/server/rocks/?.lua" ..
             ";?.lua" .. ";/Users/tony/.luaver/luarocks/3.0.4_5.1/share/lua/5.1/*.lua"
 
-local url = require("util/url")
+local url = require("utils/url")
 local P = require("test/print")
 
 P(url.parse("head http://user:pass@host.com:8080/p/a/t/h/?query=string#hash tail", true, 5))

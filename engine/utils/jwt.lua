@@ -1,4 +1,4 @@
-local jwt = require("luajwt")
+local jwt = _G.require("luajwt")
 
 local _key = "zwMKRFwlGdtB1nfFSdtCgHduYF3ZCXVY"
 local _alg = "HS256"

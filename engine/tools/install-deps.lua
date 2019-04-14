@@ -17,8 +17,6 @@ end
     apt-get install curl
     apt-get install luarocks
 
-
-
     apt-get install libssl1.0-dev
     apt-get install libjemalloc-dev
     apt-get install libboost-all-dev
@@ -38,7 +36,7 @@ end
     luarocks install lrexlib-pcre
     luarocks install luajwt
     luarocks install openssl
-    luarocks install luazlib
+    luarocks install lua-zlib
   
     wget http://luajit.org/download/LuaJIT-2.0.5.zip
     git clone https://github.com/aurahub/spack.git;

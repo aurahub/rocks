@@ -1,10 +1,11 @@
+local var = require("var")
 local uv = require("uv")
 local spack = require("spack")
-local luvit_http = require("http")
+local http = var.require_bundle("http")
 
 local _mapping = {}
 
-local function tcp(conf, user_accept, user_recv)
+local function tcp_server(conf, user_accept, user_recv)
     local host, port, keep_alive, backlog = conf.host, conf.port, conf.keep_alive, conf.backlog
     local server
 
@@ -88,13 +89,13 @@ local function tcp(conf, user_accept, user_recv)
     return user_send, user_close
 end
 
-local function http(conf, handler)
-    local server = luvit_http.createServer(handler):listen(conf.port, conf.host)
+local function http_server(conf, handler)
+    local server = http.createServer(handler):listen(conf.port, conf.host)
     print("[network] http listening at http://" .. conf.host .. ":" .. conf.port .. "/")
     return server
 end
 
 return {
-    tcp = tcp,
-    http = http
+    tcp_server = tcp_server,
+    http_server = http_server
 }

@@ -9,7 +9,8 @@
 --      The transaction pool is more like transaction in mysql.
 --      No caching procedure, so there's no need to fear about task failing.
 --      Upper logic need to lock db access for gettting transaction separated.
-local mongo = require("mongodb")
+local var = require("var")
+local mongo = var.require_bundle("luvit-mongodb")
 
 local _instance
 
