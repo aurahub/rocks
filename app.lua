@@ -21,9 +21,9 @@ var.entry = function()
                 port = 10000
             },
             mongo = {
-                host = "mongo",
-                port = 27017,
-            },
+                host = "localhost",
+                port = 27017
+            }
         }
     )
 end

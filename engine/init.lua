@@ -43,14 +43,14 @@ local function init_ser(t)
     if _conf.serialization == "json" then
         _ser.encode = function(name, data)
             if msg.map(name) > 255 then
-                p("<=", name, data)
+            -- p("<=", name, data)
             end
             return json.encode(data)
         end
         _ser.decode = function(name, packet)
             local data = json.decode(packet)
             if msg.map(name) > 255 then
-                p("=>", name, data)
+            -- p("=>", name, data)
             end
             return data
         end
