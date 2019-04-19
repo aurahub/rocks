@@ -30,20 +30,22 @@ end
 
 local function set_path()
     local rocks_dir = dirname(debug.getinfo(1, "S").source:sub(2))
-    local root_dir = "/"
+    local cwd = uv.cwd() .. "/"
+    package.path = package.path .. ";" .. "?.lua"
+    package.path = package.path .. ";" .. "?/init.lua"
     package.path = package.path .. ";" .. rocks_dir .. "?.lua"
     package.path = package.path .. ";" .. rocks_dir .. "?/init.lua"
-    package.path = package.path .. ";" .. root_dir .. "?.lua"
-    package.path = package.path .. ";" .. root_dir .. "?/init.lua"
-    print("-------------package.path-----------------")
-    for token in string.gmatch(package.path, "[^%;]+") do
-        print(token)
-    end
-    print("-------------package.cpath----------------")
-    for token in string.gmatch(package.cpath, "[^%;]+") do
-        print(token)
-    end
-    print("------------------------------------------")
+    package.path = package.path .. ";" .. cwd .. "?.lua"
+    package.path = package.path .. ";" .. cwd .. "?/init.lua"
+    -- print("-------------package.path-----------------")
+    -- for token in string.gmatch(package.path, "[^%;]+") do
+    --     print(token)
+    -- end
+    -- print("-------------package.cpath----------------")
+    -- for token in string.gmatch(package.cpath, "[^%;]+") do
+    --     print(token)
+    -- end
+    -- print("------------------------------------------")
 end
 
 return function(config)

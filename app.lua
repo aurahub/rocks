@@ -12,6 +12,7 @@ local base64 = require("base64")
 local url = require("utils/url")
 local jwt = require("utils/jwt")
 local json = require("rapidjson")
+local _cwd = uv.cwd() .. "/"
 
 local _conf = {
     tcp = {
@@ -31,8 +32,7 @@ local _conf = {
         capacity = 1,
         fill_interval = 1000
     },
-    proto_path = uv.cwd() .. "/proto",
-    mod_path = uv.cwd() .. "/mod",
+    path = ".",
     serialization = "json" -- "protobuf"
 }
 
@@ -197,11 +197,22 @@ local function assign(t_conf, m_conf)
     end
 end
 
+local function set_path(path)
+    local cwd = uv.cwd() .. "/"
+    local proto = cwd .. path .. "/proto"
+    local mod = cwd .. path .. "/mod"
+    package.path = package.path .. ";" .. cwd .. path .. "/?.lua"
+    package.path = package.path .. ";" .. cwd .. path .. "/?/init.lua"
+    return proto, mod
+end
+
 local function run(conf)
     assign(conf, _conf)
 
-    protobuf.load(_conf.proto_path)
-    msg.load(_conf.proto_path, _conf.mod_path)
+    local proto, mod = set_path(conf.path)
+
+    protobuf.load(proto)
+    msg.load(proto, mod)
     init_ser(_conf.serialization)
 
     net_send, net_close = network.tcp_server(_conf.tcp, accept, recv)
