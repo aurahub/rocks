@@ -12,7 +12,6 @@ local base64 = require("base64")
 local url = require("utils/url")
 local jwt = require("utils/jwt")
 local json = require("rapidjson")
-local _cwd = uv.cwd()
 
 local _conf = {
     tcp = {
@@ -32,8 +31,8 @@ local _conf = {
         capacity = 1,
         fill_interval = 1000
     },
-    proto_path = _cwd .. "/logic/proto",
-    mod_path = _cwd .. "/logic/mod",
+    proto_path = uv.cwd() .. "/proto",
+    mod_path = uv.cwd() .. "/mod",
     serialization = "json" -- "protobuf"
 }
 
