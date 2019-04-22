@@ -4,18 +4,23 @@ local socket = require("socket")
 
 -- env.set("UV_THREADPOOL_SIZE", #assert(uv.cpu_info()))
 -- print(env.get("UV_THREADPOOL_SIZE"))
-
 local ctx =
     uv.new_work(
-    function(...)
-        _G.a = _G.a or 0
-        _G.a = _G.a + 1
-    end,function()
-    end
+    function(n) --work,in threadpool
+        local uv = require("luv")
+        local t = uv.thread_self()
+        uv.sleep(100)
+        return n * n, n
+    end,
+    function(r, n)
+        print(string.format("%d => %d", n, r))
+    end --after work, in loop thread
 )
-
-print(
-    socket.gettime())
-uv.queue_work(ctx, 1)
 uv.queue_work(ctx, 2)
-uv.queue_work(ctx, 3)
+uv.queue_work(ctx, 4)
+uv.queue_work(ctx, 6)
+uv.queue_work(ctx, 8)
+uv.queue_work(ctx, 10)
+
+uv.run("default")
+-- uv.loop_close()
