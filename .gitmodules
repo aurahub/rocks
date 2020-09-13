@@ -1,3 +1,0 @@
-[submodule "submodule/luv"]
-	path = submodule/luv
-	url = https://github.com/luvit/luv.git
