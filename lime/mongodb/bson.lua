@@ -4,7 +4,6 @@
 -- Email: houshoushuai@gmail.com
 --
 
-
 local assert, error = assert, error
 local pairs = pairs
 local getmetatable = getmetatable
@@ -28,7 +27,7 @@ end
 local ffi = require("ffi")
 if pcall(ffi.typeof, "struct timeval") then
 else
-    ffi.cdef[[
+    ffi.cdef [[
         typedef long time_t;
 
         typedef struct timeval {
@@ -40,17 +39,31 @@ else
     ]]
 end
 
-local gettimeofday_struct = ffi.new("timeval")
+local gettimeofday_struct = ffi.new("struct timeval")
 local function getTime()
-    ffi.C.gettimeofday(gettimeofday_struct, nil)
-    return tonumber(gettimeofday_struct.tv_sec) * 1000 + tonumber(gettimeofday_struct.tv_usec / 1000)
+    if require("los").type() == "win32" then
+        return os.time()
+    else
+        ffi.C.gettimeofday(gettimeofday_struct, nil)
+        return tonumber(gettimeofday_struct.tv_sec) * 1000 + tonumber(gettimeofday_struct.tv_usec / 1000)
+    end
 end
 
-local function toLSB32(value) return toLSB(4,value) end
-local function toLSB64(value) return toLSB(8,value) end
-local function to_int32(n,v) return "\016"..n.."\000"..toLSB32(v) end
-local function to_int64(n,v) return "\018"..n.."\000"..toLSB64(v) end
-local function to_date(n,v) return "\09"..n.."\000"..toLSB64(v) end
+local function toLSB32(value)
+    return toLSB(4, value)
+end
+local function toLSB64(value)
+    return toLSB(8, value)
+end
+local function to_int32(n, v)
+    return "\016" .. n .. "\000" .. toLSB32(v)
+end
+local function to_int64(n, v)
+    return "\018" .. n .. "\000" .. toLSB64(v)
+end
+local function to_date(n, v)
+    return "\09" .. n .. "\000" .. toLSB64(v)
+end
 
 local bit64_meta = {
     __tonumber = function(obj)
@@ -92,11 +105,11 @@ local date_meta = {
 }
 
 function Bit64(value)
-    return setmetatable({ value = value }, bit64_meta)
+    return setmetatable({value = value}, bit64_meta)
 end
 
 function Bit32(value)
-    return setmetatable({ value = value }, bit32_meta)
+    return setmetatable({value = value}, bit32_meta)
 end
 
 function Date(value)
@@ -105,26 +118,23 @@ function Date(value)
     if #tostring(value) < 13 then
         value = value * 1000
     end
-    return setmetatable({ value = value }, date_meta)
+    return setmetatable({value = value}, date_meta)
 end
 
-p(Date())
-
-local ll = require("./utils")
+local ll = require("mongodb/utils")
 local le_uint_to_num = ll.le_uint_to_num
 local le_int_to_num = ll.le_int_to_num
 local num_to_le_uint = ll.num_to_le_uint
 local from_double = ll.from_double
 local to_double = ll.to_double
 
-local getlib = require("./get")
+local getlib = require("mongodb/get")
 local read_terminated_string = getlib.read_terminated_string
 
-local obid = require("./objectId")
+local obid = require("mongodb/objectId")
 local ObjectId = obid
 local new_object_id = obid.new
 local object_id_mt = obid.metatable
-
 
 local function read_document(get, numerical)
     local bytes = le_uint_to_num(get(4))
@@ -133,50 +143,52 @@ local function read_document(get, numerical)
     local t = {}
     while true do
         local op = get(1)
-        if op == "\0" then break end
-        local e_name = read_terminated_string ( get )
+        if op == "\0" then
+            break
+        end
+        local e_name = read_terminated_string(get)
         local v
         if op == "\1" then -- Double
-            v = from_double ( get ( 8 ) )
+            v = from_double(get(8))
         elseif op == "\2" then -- String
-            local len = le_uint_to_num ( get ( 4 ) )
-            v = get ( len - 1 )
-            assert ( get ( 1 ) == "\0" )
+            local len = le_uint_to_num(get(4))
+            v = get(len - 1)
+            assert(get(1) == "\0")
         elseif op == "\3" then -- Embedded document
-            v = read_document ( get , false )
+            v = read_document(get, false)
         elseif op == "\4" then -- Array
-            v = read_document ( get , true )
+            v = read_document(get, true)
         elseif op == "\5" then -- Binary
-            local len = le_uint_to_num ( get ( 4 ) )
-            local subtype = get ( 1 )
-            v = get ( len )
+            local len = le_uint_to_num(get(4))
+            local subtype = get(1)
+            v = get(len)
         elseif op == "\7" then -- ObjectId
             v = new_object_id(get(12))
             if _G.usePureObjectId == true then
                 v = tostring(v)
             end
         elseif op == "\8" then -- false
-            local f = get ( 1 )
+            local f = get(1)
             if f == "\0" then
                 v = false
             elseif f == "\1" then
                 v = true
             else
-                error ( f:byte ( ) )
+                error(f:byte())
             end
         elseif op == "\9" then -- unix time
             v = get(8)
             if v == nil then
                 v = nil
             else
-                v = Date(le_uint_to_num ( v , 1 , 8 ))
+                v = Date(le_uint_to_num(v, 1, 8))
             end
         elseif op == "\10" then -- Null
             v = nil
         elseif op == "\16" then --int32
-            v = le_int_to_num ( get ( 4 ) , 1 , 4 )
+            v = le_int_to_num(get(4), 1, 4)
         elseif op == "\18" then --int64
-            v = le_int_to_num ( get ( 8 ) , 1 , 8 )
+            v = le_int_to_num(get(8), 1, 8)
         else
             error("Unknown BSON type " .. strbyte(op))
         end
@@ -236,7 +248,6 @@ local function pack(k, v)
         else
             return to_int32(k, v)
         end
-
     elseif ot == "nil" then
         return "\10" .. k .. "\0"
     elseif ot == "string" then
@@ -287,7 +298,9 @@ function to_bson(ob)
                 onlyarray = false
             end
         end
-        if not onlyarray and not onlystring then break end
+        if not onlyarray and not onlystring then
+            break
+        end
         i = i + 1
     end
     -- for empty table, we consider it as array, rather than object
@@ -298,11 +311,11 @@ function to_bson(ob)
 
     local retarray, m = false, nil
     if onlystring then -- Do string first so the case of an empty table is done properly
-    local r = {}
-    for k, v in pairs(ob) do
-        t_insert(r, pack(k, v))
-    end
-    m = t_concat(r)
+        local r = {}
+        for k, v in pairs(ob) do
+            t_insert(r, pack(k, v))
+        end
+        m = t_concat(r)
     elseif onlyarray then
         local r = {}
 
@@ -312,7 +325,10 @@ function to_bson(ob)
         local ordermap = true
         for i, v in ipairs(ob) do
             local vtype = type(v)
-            if vtype ~= 'table' or #v ~= 3 or v[1] ~= '_order_' then ordermap = false; break end
+            if vtype ~= "table" or #v ~= 3 or v[1] ~= "_order_" then
+                ordermap = false
+                break
+            end
         end
         if ordermap then
             for i, v in ipairs(ob) do
@@ -342,16 +358,16 @@ function to_bson(ob)
             vals[ni] = v
             ni = ni + 1
         end
-        return to_bson({ _keys = keys, _vals = vals })
+        return to_bson({_keys = keys, _vals = vals})
     end
 
     return num_to_le_uint(#m + 4 + 1) .. m .. "\0", retarray
 end
 
 return {
-    from_bson = from_bson;
-    to_bson = to_bson;
-    Bit32 = Bit32;
-    Bit64 = Bit64;
-    Date = Date;
+    from_bson = from_bson,
+    to_bson = to_bson,
+    Bit32 = Bit32,
+    Bit64 = Bit64,
+    Date = Date
 }

@@ -3,4 +3,4 @@
     vcpkg install luajit
     choco install luarocks
     luarocks install luv
-    luarocks install ffi
+    choco install openssl
