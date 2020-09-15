@@ -1,4 +1,5 @@
-package.path = package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;" .. ";" .. "./deps/?/init.lua;"
+package.path =
+    package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;" .. ";" .. "./deps/?.lua;" .. ";" .. "./deps/?/init.lua;"
 
 local p = require("pretty-print").prettyPrint
 local mongodb = require("mongodb")
