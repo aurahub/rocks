@@ -1,4 +1,4 @@
-package.path = package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;"
+package.path = package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;" .. ";" .. "./deps/?/init.lua;"
 
 local p = require("pretty-print").prettyPrint
 local mongodb = require("mongodb")
@@ -27,9 +27,12 @@ c:on(
                 p(err, res)
             end
         )
-        Post:distinct("category", function(err, res)
-        	p("All distinct value of `category` in post collections: ", res)
-        end)
+        Post:distinct(
+            "category",
+            function(err, res)
+                p("All distinct value of `category` in post collections: ", res)
+            end
+        )
     end
 )
 c:on(
