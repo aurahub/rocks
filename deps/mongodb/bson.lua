@@ -43,6 +43,7 @@ local gettimeofday_struct = ffi.new("struct timeval")
 local function getTime()
     if require("los").type() == "win32" then
         return os.time()
+     -- LIME:TODO
     else
         ffi.C.gettimeofday(gettimeofday_struct, nil)
         return tonumber(gettimeofday_struct.tv_sec) * 1000 + tonumber(gettimeofday_struct.tv_usec / 1000)

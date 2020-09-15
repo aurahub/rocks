@@ -28,6 +28,7 @@ local object_id_mt = {
     end
 }
 
+--- LIME:TODO
 local machineid = "OPME"
 -- local machineid = assert(io.popen("uname -n")):read("*l")
 -- to do md5

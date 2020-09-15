@@ -34,7 +34,7 @@ local timer = require("timer")
 local utils = require("utils")
 local Emitter = require("core").Emitter
 local Duplex = require("stream").Duplex
- --
+local process = require("process").process
 
 --[[ Socket ]] local Socket = Duplex:extend()
 function Socket:initialize(options)
@@ -318,7 +318,7 @@ end
 function Socket:getsockname()
   return uv.tcp_getsockname(self._handle)
 end
- --
+--
 
 --[[ Server ]] local Server = Emitter:extend()
 function Server:init(options, connectionListener)
