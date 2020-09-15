@@ -4,7 +4,8 @@
 -- Email: houshoushuai@gmail.com
 --
 
-Emitter = require("core").Emitter
+local emitter = require("core").Emitter
+local p = require("pretty-print").prettyPrint
 local net = require("net")
 local ll = require("mongodb/utils")
 local num_to_le_uint = ll.num_to_le_uint
@@ -14,14 +15,12 @@ local le_bpeek = ll.le_bpeek
 local bson = require("mongodb/bson")
 local to_bson = bson.to_bson
 local from_bson = bson.from_bson
-
 local getlib = require("mongodb/get")
 local get_from_string = getlib.get_from_string
 local ObjectId = require("mongodb/objectId")
-
 local Collection = require("mongodb/collection")
 
-Mongo = Emitter:extend()
+Mongo = emitter:extend()
 
 _id = 0
 function Mongo:initialize(options)

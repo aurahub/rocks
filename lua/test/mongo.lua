@@ -6,6 +6,7 @@ local db = Mongo:new({db = "test"})
 db:on(
     "connect",
     function()
+        print("11111")
         -- Do stuff here.
         local Post = db:collection("post")
         local page = 1

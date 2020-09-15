@@ -28,7 +28,8 @@ local object_id_mt = {
     end
 }
 
-local machineid = assert(io.popen("uname -n")):read("*l")
+local machineid = "OPME"
+-- local machineid = assert(io.popen("uname -n")):read("*l")
 -- to do md5
 -- machineid = openssl.digest.digest("md5", machineid):sub(1, 3)
 

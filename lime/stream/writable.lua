@@ -53,7 +53,7 @@ function WritableState:initialize(options, stream)
   --]]
   self.objectMode = not (not options.objectMode)
 
-  if core.instanceof(stream, require("./stream_duplex").Duplex) then
+  if core.instanceof(stream, require("stream/duplex").Duplex) then
     self.objectMode = self.objectMode or not (not options.writableObjectMode)
   end
 
