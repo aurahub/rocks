@@ -1,7 +1,8 @@
 package.path =
     package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;" .. ";" .. "./deps/?.lua;" .. ";" .. "./deps/?/init.lua;"
-
+_G.process = require("process").globalProcess()
 local p = require("pretty-print").prettyPrint
+
 local mongodb = require("mongodb")
 local c = mongodb:new({db = "test"})
 
@@ -9,7 +10,7 @@ c:on(
     "connect",
     function()
         -- Do stuff here.
-        local Post = db:collection("post")
+        local Post = c:collection("post")
         local page = 1
         Post:insert(
             {

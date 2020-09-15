@@ -252,6 +252,4 @@ local function globalProcess()
     return process
 end
 
-local process = globalProcess()
-
-return {process = process}
+return {globalProcess = globalProcess}

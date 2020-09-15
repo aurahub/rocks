@@ -1,6 +1,7 @@
 local Emitter = require("core").Emitter
 local ObjectId = require("mongodb/objectId").ObjectId
 local Cursor = Emitter:extend()
+local p = require("pretty-print").prettyPrint
 
 function Cursor:initialize(collection, query, cb)
     self.db = collection.db
