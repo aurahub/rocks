@@ -1,8 +1,6 @@
-package.path =
-    package.path .. ";" .. "./?.lua;" .. ";" .. "./?/init.lua;" .. ";" .. "./deps/?.lua;" .. ";" .. "./deps/?/init.lua;"
-_G.process = require("process").globalProcess()
+require("path")
+require("process").bootstrap(function()
 local p = require("pretty-print").prettyPrint
-
 local mongodb = require("mongodb")
 local c = mongodb:new({db = "test"})
 
@@ -33,6 +31,7 @@ c:on(
             "category",
             function(err, res)
                 p("All distinct value of `category` in post collections: ", res)
+                os.exit(0)
             end
         )
     end
@@ -56,4 +55,5 @@ c:on(
         print("close")
     end
 )
-require("luv").run()
+
+end)

@@ -18,6 +18,7 @@ limitations under the License.
 local utils = require("utils")
 local Readable = require("stream/readable").Readable
 local Writable = require("stream/writable").Writable
+local process = require("global").process
 
 local Duplex = Readable:extend()
 

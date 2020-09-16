@@ -29,9 +29,7 @@ local object_id_mt = {
 }
 
 --- LIME:TODO
-local machineid = "OPME"
--- local machineid = assert(io.popen("uname -n")):read("*l")
--- to do md5
+local machineid = uv.os_gethostname()
 -- machineid = openssl.digest.digest("md5", machineid):sub(1, 3)
 
 local pid = uv.getpid()

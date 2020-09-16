@@ -18,6 +18,7 @@ limitations under the License.
 local core = require("core")
 local utils = require("utils")
 local Stream = require("stream/core").Stream
+local process = require("global").process
 
 local Error = core.Error
 
