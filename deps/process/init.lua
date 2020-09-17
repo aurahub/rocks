@@ -36,6 +36,7 @@ local function exit(self, code)
 end
 
 local function bootstrap(f)
+    process = Emitter:new()
     process.argv = args
     process.exitCode = 0
     process.nextTick = nextTick

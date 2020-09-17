@@ -1,7 +1,4 @@
-local Emitter = require("core").Emitter
-
-local process = Emitter:new()
-
+local process = {}
 return {
     process = process
 }

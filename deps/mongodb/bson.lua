@@ -1,9 +1,3 @@
---
--- Created by: Cyril.
--- Created at: 15/6/20 下午2:37
--- Email: houshoushuai@gmail.com
---
-
 local assert, error = assert, error
 local pairs = pairs
 local getmetatable = getmetatable
@@ -11,8 +5,6 @@ local type = type
 local tonumber, tostring = tonumber, tostring
 local t_insert = table.insert
 local t_concat = table.concat
-local strformat = string.format
-local strmatch = string.match
 local strbyte = string.byte
 
 local function toLSB(bytes, value)

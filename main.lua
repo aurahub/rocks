@@ -16,7 +16,7 @@ c:on(
                 content = "Here is the first blog post ....",
                 author = "Cyril Hou"
             },
-            function(err, res)
+            function(_, res)
                 p(res)
             end
         )
@@ -29,7 +29,7 @@ c:on(
         )
         Post:distinct(
             "category",
-            function(err, res)
+            function(_, res)
                 p("All distinct value of `category` in post collections: ", res)
                 os.exit(0)
             end
