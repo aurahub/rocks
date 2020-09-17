@@ -1,6 +1,5 @@
 local Emitter = require("core").Emitter
---luacheck: new globals exports
-local e = exports or {}
+local e =  {}
 setmetatable(e, Emitter.meta)
 if e.init then
     e:init()

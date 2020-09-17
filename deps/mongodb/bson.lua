@@ -1,3 +1,4 @@
+local uv = require("luv")
 local assert, error = assert, error
 local pairs = pairs
 local getmetatable = getmetatable
@@ -6,6 +7,7 @@ local tonumber, tostring = tonumber, tostring
 local t_insert = table.insert
 local t_concat = table.concat
 local strbyte = string.byte
+
 
 local function toLSB(bytes, value)
     local str = ""

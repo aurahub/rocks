@@ -1,3 +1,4 @@
+local process = require("global").process
 local core = {}
 
 --[[

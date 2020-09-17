@@ -314,7 +314,7 @@ function Mongo:connect()
         function(code)
             if (code == "ECONNREFUSED") then
                 self:emit("error", code)
-                print("\x1b[37;41m Database connection failed. \x1b[0m")
+                p("Database connection failed. ")
             end
         end
     )

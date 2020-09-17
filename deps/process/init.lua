@@ -35,9 +35,9 @@ local function exit(self, code)
     process.stderr:_end()
 end
 
-local function bootstrap(f)
+local function bootstrap(entry, ...)
     process = Emitter:new()
-    process.argv = args
+    process.argv = {...}
     process.exitCode = 0
     process.nextTick = nextTick
     process.kill = kill
@@ -57,7 +57,7 @@ local function bootstrap(f)
     hooks:on("process.exit", utils.bind(process.emit, process, "exit"))
     hooks:on("process.uncaughtException", utils.bind(process.emit, process, "uncaughtException"))
     
-    f()
+    entry()
 
     uv.run()
 end
