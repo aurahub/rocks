@@ -1,18 +1,18 @@
-local process = require("global").process
+
 local os = require("os")
 local hooks = require("hooks")
 local timer = require("timer")
 local utils = require("utils")
 local uv = require("luv")
-local Emitter = require("core").Emitter
+local errorEmitter = require("core").errorEmitter
 local pp = require("pretty-print")
-
 local UvStreamWritable = require("process/uv_stream").UvStreamWritable
 local UvStreamReadable = require("process/uv_stream").UvStreamReadable
+local on = require("process/signal").on
+local removeListener = require("process/signal").removeListener
 
-local function nextTick(...)
-    timer.setImmediate(...)
-end
+-- global process declareation
+local process = {}
 
 local function kill(pid, signal)
     uv.kill(pid, signal or "sigterm")
@@ -36,14 +36,19 @@ local function exit(self, code)
 end
 
 local function bootstrap(entry, ...)
-    process = Emitter:new()
     process.argv = {...}
+    entry(...)
+    uv.run()
+end
+
+local function initProcess()
+    setmetatable(process, {__index = errorEmitter})
+    process.bootstrap = bootstrap
     process.exitCode = 0
-    process.nextTick = nextTick
     process.kill = kill
     process.exit = exit
-    process.on = require("process/signal").on
-    process.removeListener = require("process/signal").removeListener
+    process.on = on
+    process.removeListener = removeListener
     if uv.guess_handle(0) ~= "file" then
         process.stdin = UvStreamReadable:new(pp.stdin)
     else
@@ -56,12 +61,7 @@ local function bootstrap(entry, ...)
     process.stderr = UvStreamWritable:new(pp.stderr)
     hooks:on("process.exit", utils.bind(process.emit, process, "exit"))
     hooks:on("process.uncaughtException", utils.bind(process.emit, process, "uncaughtException"))
-    
-    entry()
-
-    uv.run()
 end
+initProcess()
 
-return {
-    bootstrap = bootstrap,
-}
+return process

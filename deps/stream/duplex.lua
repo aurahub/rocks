@@ -18,7 +18,7 @@ limitations under the License.
 local utils = require("utils")
 local Readable = require("stream/readable").Readable
 local Writable = require("stream/writable").Writable
-local process = require("global").process
+local timer = require("timer")
 
 local Duplex = Readable:extend()
 
@@ -70,7 +70,7 @@ function onend(self)
   // no more data can be written.
   // But allow more writes to happen in this tick.
   --]]
-  process.nextTick(utils.bind(self._end, self))
+  timer.setImmediate(utils.bind(self._end, self))
 end
 
 return {Duplex = Duplex}

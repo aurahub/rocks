@@ -1,4 +1,3 @@
-local process = require("global").process
 local core = {}
 
 --[[
@@ -132,17 +131,19 @@ the beginning its parameter list.
 local Emitter = Object:extend()
 core.Emitter = Emitter
 
+local errorEmitter = Emitter:new()
+core.errorEmitter = errorEmitter
+
 -- By default, any error events that are not listened for should throw errors
 function Emitter:missingHandlerType(name, ...)
   if name == "error" then
-    --error(tostring(args[1]))
     -- we define catchall error handler
-    if self ~= process then
+    if self ~= errorEmitter then
       -- if process has an error handler
-      local handlers = rawget(process, "handlers")
+      local handlers = rawget(errorEmitter, "handlers")
       if handlers and handlers["error"] then
         -- delegate to process error handler
-        process:emit("error", ..., self)
+        errorEmitter:emit("error", ..., self)
       end
     end
   end

@@ -18,7 +18,7 @@ limitations under the License.
 local core = require("core")
 local utils = require("utils")
 local Stream = require("stream/core").Stream
-local process = require("global").process
+local timer = require("timer")
 
 local Error = core.Error
 
@@ -456,7 +456,7 @@ function emitReadable(stream)
   if not state.emittedReadable then
     state.emittedReadable = true
     if state.sync then
-      process.nextTick(
+      timer.setImmediate(
         function()
           emitReadable_(stream)
         end
@@ -483,7 +483,7 @@ end
 function maybeReadMore(stream, state)
   if not state.readingMore then
     state.readingMore = true
-    process.nextTick(
+    timer.setImmediate(
       function()
         maybeReadMore_(stream, state)
       end
@@ -615,7 +615,7 @@ function Readable:pipe(dest, pipeOpts)
   end
 
   if state.endEmitted then
-    process.nextTick(_endFn)
+    timer.setImmediate(_endFn)
   else
     src:once("end", _endFn)
   end
@@ -777,7 +777,7 @@ function Readable:on(ev, fn)
       state.needReadable = true
       if not state.reading then
         local _self = self
-        process.nextTick(
+        timer.setImmediate(
           function()
             _self:read(0)
           end
@@ -811,7 +811,7 @@ end
 function resume(stream, state)
   if not state.resumeScheduled then
     state.resumeScheduled = true
-    process.nextTick(
+    timer.setImmediate(
       function()
         resume_(stream, state)
       end
@@ -996,7 +996,7 @@ function endReadable(stream)
 
   if not state.endEmitted then
     state.ended = true
-    process.nextTick(
+    timer.setImmediate(
       function()
         --[[
       // Check that we didn't get one last unshift.

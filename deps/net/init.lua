@@ -34,7 +34,7 @@ local timer = require("timer")
 local utils = require("utils")
 local Emitter = require("core").Emitter
 local Duplex = require("stream").Duplex
-local process = require("global").process
+local timer = require("timer")
 
 --[[ Socket ]] local Socket = Duplex:extend()
 function Socket:initialize(options)
@@ -295,7 +295,7 @@ function Socket:destroy(exception, callback)
   end
 
   if exception then
-    process.nextTick(
+    timer.setImmediate(
       function()
         self:emit("error", exception)
       end

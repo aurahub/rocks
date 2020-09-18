@@ -17,7 +17,7 @@ limitations under the License.
 --]]
 local core = require("core")
 local Stream = require("stream/core").Stream
-local process = require("global").process
+local timer = require("timer")
 
 local Error = core.Error
 
@@ -196,7 +196,7 @@ function writeAfterEnd(stream, state, cb)
   // TODO: defer error events consistently everywhere, not just the cb
   --]]
   stream:emit("error", er)
-  process.nextTick(
+  timer.setImmediate(
     function()
       cb(er)
     end
@@ -215,7 +215,7 @@ function validChunk(stream, state, chunk, cb)
   if chunk ~= nil and type(chunk) ~= "string" and not state.objectMode then
     local er = Error:new("Invalid non-string/buffer chunk")
     stream:emit("error", er)
-    process.nextTick(
+    timer.setImmediate(
       function()
         cb(er)
       end
@@ -328,7 +328,7 @@ end
 
 function onwriteError(stream, state, sync, er, cb)
   if sync then
-    process.nextTick(
+    timer.setImmediate(
       function()
         state.pendingcb = state.pendingcb - 1
         cb(er)
@@ -370,7 +370,7 @@ function onwrite(stream, er)
     end
 
     if sync then
-      process.nextTick(
+      timer.setImmediate(
         function()
           afterWrite(stream, state, finished, cb)
         end
@@ -549,7 +549,7 @@ function endWritable(stream, state, cb)
   finishMaybe(stream, state)
   if cb then
     if state.finished then
-      process.nextTick(cb)
+      timer.setImmediate(cb)
     else
       stream:once("finish", cb)
     end
