@@ -1,1 +1,1 @@
-for %%i in ("bin\x64-luajit\*")  do (mklink /H "%%~ni%%~xi" %%i)
+for %%i in ("bin\x64-luajit\*")  do (del %%~ni%%~xi && mklink /H "%%~ni%%~xi" %%i)
