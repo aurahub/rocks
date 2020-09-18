@@ -1,0 +1,1 @@
+for %%i in ("bin\x64-luajit\*")  do (mklink /H "%%~ni%%~xi" %%i)
