@@ -14,6 +14,7 @@ local ll = require("mongodb/utils")
 local uv = require("luv")
 local num_to_le_uint = ll.num_to_le_uint
 local num_to_be_uint = ll.num_to_be_uint
+local md5 = require("mongodb/md5")
 
 local object_id_mt = {
     __tostring = function(ob)
@@ -28,9 +29,7 @@ local object_id_mt = {
     end
 }
 
---- LIME:TODO
-local machineid = uv.os_gethostname()
--- machineid = openssl.digest.digest("md5", machineid):sub(1, 3)
+local machineid = md5.sumhexa(uv.os_gethostname()):sub(1,3)
 
 local pid = uv.getpid()
 pid = num_to_le_uint(pid, 2)
