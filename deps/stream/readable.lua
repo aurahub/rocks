@@ -16,14 +16,14 @@ limitations under the License.
 
 --]]
 local core = require("core")
+local process = core.process
+local Error = core.Error
 local utils = require("utils")
 local Stream = require("stream/core").Stream
 local timer = require("timer")
-
-local Error = core.Error
+local bit = _G.bit or require("bit")
 
 local ReadableState = core.Object:extend()
-
 function ReadableState:initialize(options, stream)
   options = options or {}
 
@@ -231,7 +231,7 @@ function roundUpToNextPowerOf2(n)
     n = MAX_HWM
   else
     n = n - 1
-    p = 1
+    local p = 1
     while p < 32 do
       n = bit.bor(n, bit.rshift(n, p))
       p = bit.lshift(p, 1)
@@ -492,16 +492,16 @@ function maybeReadMore(stream, state)
 end
 
 function maybeReadMore_(stream, state)
-  local len = state.length
+  local l = state.length
   while not state.reading and not state.flowing and not state.ended and state.length < state.highWaterMark do
     stream:read(0)
-    if len == state.length then
+    if l == state.length then
       --[[
       // didn't get any data, stop spinning.
       --]]
       break
     else
-      len = state.length
+      l = state.length
     end
   end
   state.readingMore = false
@@ -513,7 +513,7 @@ end
 // for virtual (non-string, non-buffer) streams, "length" is somewhat
 // arbitrary, and perhaps not very meaningful.
 --]]
-function Readable:_read(n)
+function Readable:_read(_)--unused args [n]
   self:emit("error", Error:new("not implemented"))
 end
 
@@ -719,12 +719,12 @@ function Readable:unpipe(dest)
     // remove all.
     --]]
     local dests = state.pipes
-    local len = state.pipesCount
+    local l = state.pipesCount
     state.pipes = nil
     state.pipesCount = 0
     state.flowing = false
 
-    for i = 1, len, 1 do
+    for i = 1, l, 1 do
       dests[i]:emit("unpipe", self)
     end
     return self
@@ -892,7 +892,7 @@ function Readable:wrap(stream)
   // proxy certain important events.
   --]]
   local events = {"error", "close", "destroy", "pause", "resume"}
-  for k, v in pairs(events) do
+  for _, v in pairs(events) do
     stream:on(v, utils.bind(self.emit, self, v))
   end
 
@@ -900,7 +900,7 @@ function Readable:wrap(stream)
   // when we try to consume some more bytes, simply unpause the
   // underlying stream.
   --]]
-  self._read = function(n)
+  self._read = function(_) -- unused args [n]
     if paused then
       paused = false
       stream:resume()
@@ -960,7 +960,7 @@ function fromList(n, state)
       -- for better GC efficiency. (http://www.lua.org/pil/11.6.html)
       local tmp = {}
       local c = 0
-      for i = 1, len(list), 1 do
+      for _ = 1, len(list), 1 do
         if n - c >= len(list[1]) then
           -- grab the entire list[1]
           c = c + list[1]

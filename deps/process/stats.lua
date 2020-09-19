@@ -5,7 +5,7 @@ local uv = require("luv")
 --  { rss = value, heapUsed = value }
 -- where rss is the resident set size for the current process,
 -- and heapUsed is the memory used by the Lua VM
-local function memoryUsage(self)
+local function memoryUsage(_) -- unused args [self]
     return {
         rss = uv.resident_set_memory(),
         heapUsed = collectgarbage("count") * 1024
@@ -18,7 +18,7 @@ local MICROS_PER_SEC = 1000000
 -- (as a table of the format {user=value, system=value})
 -- The result of a previous call to process:cpuUsage() can optionally be passed as
 -- an argument to get a diff reading
-local function cpuUsage(self, prevValue)
+local function cpuUsage(_, prevValue) -- unused args [self]
     local rusage, err = uv.getrusage()
     if not rusage then
         return nil, err
@@ -31,3 +31,8 @@ local function cpuUsage(self, prevValue)
     end
     return {user = user, system = system}
 end
+
+return {
+    memoryUsage = memoryUsage,
+    cpuUsage = cpuUsage,
+}

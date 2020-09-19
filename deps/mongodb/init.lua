@@ -20,9 +20,9 @@ local get_from_string = getlib.get_from_string
 local ObjectId = require("mongodb/objectId")
 local Collection = require("mongodb/collection")
 
-Mongo = emitter:extend()
+local Mongo = emitter:extend()
 
-_id = 0
+local _id = 0
 function Mongo:initialize(options)
     options = options or {}
     self.options = options

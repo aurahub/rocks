@@ -28,7 +28,7 @@ function UvStreamReadable:_onPause()
     uv.read_stop(self.handle)
 end
 
-function UvStreamReadable:_read(n)
+function UvStreamReadable:_read(_) -- unused args [n]
     local function onRead(err, data)
         if err then
             return self:emit("error", err)

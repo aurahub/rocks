@@ -68,7 +68,7 @@ local TransformState = core.Object:extend()
 
 local afterTransform, done
 
-function TransformState:initialize(options, stream)
+function TransformState:initialize(_, stream)
   self.afterTransform = function(er, data)
     return afterTransform(stream, er, data)
   end
@@ -167,7 +167,7 @@ end
 // never call cb(), then you'll never get another chunk.
 --]]
 function Transform:_transform(chunk, cb)
-  error("not implemented")
+  error("not implemented"..self..chunk..cb)
 end
 
 function Transform:_write(chunk, cb)
@@ -187,7 +187,7 @@ end
 // _transform does all the work.
 // That we got here means that the readable side wants more data.
 --]]
-function Transform:_read(n)
+function Transform:_read(_) -- unused args [n]
   local ts = self._transformState
 
   if ts.writechunk ~= nil and ts.writecb and not ts.transforming then

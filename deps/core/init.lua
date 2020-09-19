@@ -131,19 +131,19 @@ the beginning its parameter list.
 local Emitter = Object:extend()
 core.Emitter = Emitter
 
-local errorEmitter = Emitter:new()
-core.errorEmitter = errorEmitter
+local process = Emitter:new()
+core.process = process
 
 -- By default, any error events that are not listened for should throw errors
 function Emitter:missingHandlerType(name, ...)
   if name == "error" then
     -- we define catchall error handler
-    if self ~= errorEmitter then
+    if self ~= process then
       -- if process has an error handler
-      local handlers = rawget(errorEmitter, "handlers")
+      local handlers = rawget(process, "handlers")
       if handlers and handlers["error"] then
         -- delegate to process error handler
-        errorEmitter:emit("error", ..., self)
+        process:emit("error", ..., self)
       end
     end
   end
