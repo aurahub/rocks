@@ -7,7 +7,8 @@ local package_path = {
 }
 local package_cpath = {
     package.cpath,
-    "deps"
+    "deps/?.dll",
+    "C:/ProgramData/chocolatey/lib/luarocks/luarocks-2.4.4-win32/clibs/?.dll",
 }
 
 local function load()
