@@ -9,31 +9,43 @@ local c = Mongodb:new({db = "test"})
 c:on(
     "connect",
     function()
-        -- Do stuff here.
         local Post = c:collection("post")
-        local page = 1
-        Post:insert(
-            {
-                title = "Hello word!",
-                content = "Here is the first blog post ....",
-                author = "Cyril Hou"
-            },
-            function(err, res)
-                p("insert:", err, res)
-            end
-        )
-        local posts = Post:find({author = "Cyril Hou"})
-        posts:limit(10):skip(page * 10):update({authorAge = 25}):exec(
-            function(err, res)
-                p("update:", err, res)
-            end
-        )
-        Post:distinct(
-            "category",
-            function(err, res)
-                p("distinct:", err, res)
-            end
-        )
+        local page = 0
+        
+        local function distinct()
+            Post:distinct(
+                "author",
+                function(err, res)
+                    p("distinct:", err, res)
+                end
+            )
+        end
+        
+        local function update()
+            local posts = Post:find({author = "Cyril Hou"})
+            posts:limit(10):skip(page * 10):update({authorAge = 25}):exec(
+                function(err, res)
+                    p("update:", err, res)
+                    distinct()
+                end
+            )
+        end
+        
+        local function insert()
+            Post:insert(
+                {
+                    title = "Hello word!",
+                    content = "Here is the first blog post ....",
+                    author = "Cyril Hou"
+                },
+                function(err, res)
+                    p("insert:", err, res)
+                    update()
+                end
+            )
+        end
+
+        insert()
     end
 )
 c:on(
@@ -55,7 +67,3 @@ c:on(
         print("close")
     end
 )
-
-while true do 
-    uv.run()
-end
