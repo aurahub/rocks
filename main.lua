@@ -18,21 +18,20 @@ c:on(
                 content = "Here is the first blog post ....",
                 author = "Cyril Hou"
             },
-            function(_, res)
-                p(res)
+            function(err, res)
+                p("insert:", err, res)
             end
         )
         local posts = Post:find({author = "Cyril Hou"})
         posts:limit(10):skip(page * 10):update({authorAge = 25}):exec(
             function(err, res)
-                p(err, res)
+                p("update:", err, res)
             end
         )
         Post:distinct(
             "category",
-            function(_, res)
-                p("All distinct value of `category` in post collections: ", res)
-                -- os.exit(0)
+            function(err, res)
+                p("distinct:", err, res)
             end
         )
     end
