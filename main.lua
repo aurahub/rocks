@@ -1,7 +1,11 @@
 
 local p = require("pretty-print").prettyPrint
 local mongodb = require("mongodb")
+
+local uv = require('luv')
+
 local c = mongodb:new({db = "test"})
+
 c:on(
     "connect",
     function()
@@ -28,7 +32,7 @@ c:on(
             "category",
             function(_, res)
                 p("All distinct value of `category` in post collections: ", res)
-                os.exit(0)
+                -- os.exit(0)
             end
         )
     end

@@ -10,12 +10,5 @@ local package_cpath = {
     "deps/?.dll",
     "C:/ProgramData/chocolatey/lib/luarocks/luarocks-2.4.4-win32/clibs/?.dll",
 }
-
-local function load()
-    package.path = table.concat(package_path, ";")
-    package.cpath = table.concat(package_cpath, ";")
-end
-
-return {
-    load = load
-}
+package.path = table.concat(package_path, ";")
+package.cpath = table.concat(package_cpath, ";")
