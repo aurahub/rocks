@@ -1,3 +1,3 @@
-require("deps/path").load()
+require("deps/path")
 os.exit(require("process").bootstrap(loadfile("main.lua")))
 

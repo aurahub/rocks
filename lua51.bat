@@ -1,0 +1,1 @@
+for %%i in ("bin\msvc-x64-mt\luajit\*")  do (del %%~ni%%~xi)

@@ -1,10 +1,10 @@
 
 local p = require("pretty-print").prettyPrint
-local mongodb = require("mongodb")
+local Mongodb = require("mongodb")
 
 local uv = require('luv')
 
-local c = mongodb:new({db = "test"})
+local c = Mongodb:new({db = "test"})
 
 c:on(
     "connect",
@@ -56,3 +56,7 @@ c:on(
         print("close")
     end
 )
+
+while true do 
+    uv.run()
+end

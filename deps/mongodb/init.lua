@@ -1,10 +1,4 @@
---
--- Created by: Cyril.
--- Created at: 15/6/20 上午12:18
--- Email: houshoushuai@gmail.com
---
-
-local emitter = require("core").Emitter
+local Emitter = require("core").Emitter
 local p = require("pretty-print").prettyPrint
 local net = require("net")
 local ll = require("mongodb/utils")
@@ -20,7 +14,7 @@ local get_from_string = getlib.get_from_string
 local ObjectId = require("mongodb/objectId")
 local Collection = require("mongodb/collection")
 
-local Mongo = emitter:extend()
+local Mongo = Emitter:extend()
 
 local _id = 0
 function Mongo:initialize(options)
@@ -273,6 +267,8 @@ function Mongo:_onData(data)
     end
 end
 
+
+
 function Mongo:connect()
     local socket
     socket = net.createConnection(self.port, self.host)
@@ -281,11 +277,14 @@ function Mongo:connect()
         function()
             p("[Info] - Database is connected.......")
             self.tempData = ""
+
+            local a = function(data)
+                self:_onData(data)
+            end
+
             socket:on(
                 "data",
-                function(data)
-                    self:_onData(data)
-                end
+                a
             )
 
             socket:on(
