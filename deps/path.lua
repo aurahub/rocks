@@ -8,7 +8,7 @@ local package_path = {
 local package_cpath = {
     package.cpath,
     "deps/?.dll",
-    "C:/ProgramData/chocolatey/lib/luarocks/luarocks-2.4.4-win32/clibs/?.dll",
+    "D:/Program Files/Lua/systree/lib/lua/5.1/?.dll",
 }
 package.path = table.concat(package_path, ";")
 package.cpath = table.concat(package_cpath, ";")
