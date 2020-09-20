@@ -21,6 +21,7 @@ local Error = core.Error
 local utils = require("utils")
 local Stream = require("stream/core").Stream
 local timer = require("timer")
+local bit = _G.bit or require("bit")
 
 local ReadableState = core.Object:extend()
 function ReadableState:initialize(options, stream)

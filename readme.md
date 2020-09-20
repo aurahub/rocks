@@ -1,8 +1,10 @@
-# 111
+# Windows
 
     vcpkg install luajit
     choco install luarocks
-    luarocks install luv
-    luarocks install LuaBitOp   
 
-    lua5.1 not compatible
+# Ubuntu:
+
+    apt install -y cmake lua5.1 luarocks
+    luarocks install luv
+    luarocks install luabitop   

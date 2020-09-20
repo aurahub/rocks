@@ -1,11 +1,3 @@
---
--- Created by: Cyril.
--- Created at: 15/6/20 下午2:05
--- Email: houshoushuai@gmail.com
---
-
--- Library for reading low level data
-
 local assert = assert
 local unpack = unpack
 local floor = math.floor
