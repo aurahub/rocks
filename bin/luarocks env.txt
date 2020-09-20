@@ -1,0 +1,30 @@
+You may want to add the following elements to your paths;
+Lua interpreter;
+  PATH     :   D:\Program Files\Lua
+  PATHEXT  :   .LUA
+LuaRocks;
+  PATH     :   D:\Program Files (x86)\LuaRocks
+  LUA_PATH :   D:\Program Files (x86)\LuaRocks\lua\?.lua;D:\Program Files (x86)\LuaRocks\lua\?\init.lua
+Local user rocktree (Note: %APPDATA% is user dependent);
+  PATH     :   %APPDATA%\LuaRocks\bin
+  LUA_PATH :   %APPDATA%\LuaRocks\share\lua\5.1\?.lua;%APPDATA%\LuaRocks\share\lua\5.1\?\init.lua
+  LUA_CPATH:   %APPDATA%\LuaRocks\lib\lua\5.1\?.dll
+System rocktree
+  PATH     :   D:\Program Files\Lua\systree\bin
+  LUA_PATH :   D:\Program Files\Lua\systree\share\lua\5.1\?.lua;D:\Program Files\Lua\systree\share\lua\5.1\?\init.lua
+  LUA_CPATH:   D:\Program Files\Lua\systree\lib\lua\5.1\?.dll
+
+Note that the %APPDATA% element in the paths above is user specific and it MUST be replaced by its actual value.
+For the current user that value is: C:\Users\Tony\AppData\Roaming.
+
+
+手动编译 lua5.1 x64
+
+
+## install cmd
+install /MSVC /P "D:\Program Files\LuaRocks" /LV 5.1 
+
+LUA_CPATH
+D:\Program Files\Lua\systree\lib\lua\5.1\?.dll;%APPDATA%\LuaRocks\lib\lua\5.1\?.dll;%LUA_CPATH%;
+LUA_PATH
+D:\Program Files\LuaRocks\lua\?.lua;D:\Program Files\LuaRocks\lua\?\init.lua;%APPDATA%\LuaRocks\share\lua\5.1\?.lua;%APPDATA%\LuaRocks\share\lua\5.1\?\init.lua;D:\Program Files\Lua\systree\share\lua\5.1\?.lua;D:\Program Files\Lua\systree\share\lua\5.1\?\init.lua;%LUA_PATH%;

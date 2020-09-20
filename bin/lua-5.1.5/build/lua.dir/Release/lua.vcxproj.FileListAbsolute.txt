@@ -1,0 +1,2 @@
+C:\Users\Tony\Documents\GitHub\lua-5.1.5\build\Release\lua51.dll
+C:\Users\Tony\Documents\GitHub\lua-5.1.5\build\lua.dir\Release\lua.vcxproj.CopyComplete

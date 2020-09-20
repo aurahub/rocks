@@ -1,0 +1,10 @@
+^C:\USERS\TONY\DOCUMENTS\GITHUB\LUA-5.1.5\BUILD\CMAKEFILES\BE33428D78DA579FEFC12D0AD050ABB4\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Tony/Documents/GitHub/lua-5.1.5 -BC:/Users/Tony/Documents/GitHub/lua-5.1.5/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/lua51.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

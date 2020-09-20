@@ -1,0 +1,1 @@
+luarocks install luaossl "CRYPTO_DIR=C:\Users\Tony\Desktop\OpenSSL-Win64" "OPENSSL_DIR=C:\Users\Tony\Desktop\OpenSSL-Win64"
