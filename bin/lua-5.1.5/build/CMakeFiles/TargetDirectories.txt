@@ -1,6 +1,0 @@
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/libluadll.dir
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/liblua.dir
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/lua.dir
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/luac.dir
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Tony/Documents/GitHub/lua-5.1.5/build/CMakeFiles/ZERO_CHECK.dir
