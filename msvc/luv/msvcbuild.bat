@@ -1,4 +1,5 @@
-@echo off
+REM @echo off
+
 if "%ARCH%" equ "" (
 	if %PROCESSOR_ARCHITECTURE%==x86 (
 		set ARCH=x86
@@ -54,34 +55,13 @@ echo "Windows ARCH(%ARCH%) is invalid"
 goto :clean
 
 :build
-if %errorlevel%==0 (cmake -H. -Bbuild %ARG_GENERATOR% %ARG_ARCH%)
+if %errorlevel%==0 (cmake -H. -Bbuild %ARG_GENERATOR% %ARG_ARCH% -DWITH_LUA_ENGINE=Lua -DLUA_BUILD_TYPE=System)
 if %errorlevel%==0 (cmake --build build --config Release)
-goto :install
-
-:install
-md Lua\5.1 Lua\5.1\include Lua\5.1\lib
-copy /Y build\Release\lua.exe Lua\5.1\lua.exe
-copy /Y build\Release\luac.exe Lua\5.1\luac.exe
-copy /Y build\Release\lua51.dll Lua\5.1\lua5.1.dll
-copy /Y build\Release\lua51.dll Lua\5.1\lua51.dll
-
-copy /Y build\Release\lua51.lib Lua\5.1\lib\lua5.1.lib
-copy /Y build\Release\lua51.dll Lua\5.1\lib\lua5.1.dll
-copy /Y build\Release\lua51.lib Lua\5.1\lib\lua51.lib
-copy /Y build\Release\lua51.dll Lua\5.1\lib\lua51.dll
-
-copy /Y src\lauxlib.h  Lua\5.1\include\lauxlib.h
-copy /Y src\lua.h  Lua\5.1\include\lua.h
-copy /Y src\luaconf.h  Lua\5.1\include\luaconf.h
-copy /Y src\lualib.h Lua\5.1\include\lualib.h
-copy /Y etc\lua.hpp  Lua\5.1\include\lua.hpp
-explorer Lua\5.1
-
+if %errorlevel%==0 (explorer build\Release)
 goto :end
 
 :clean
 if EXIST build RMDIR /S /Q build
-if EXIST build RMDIR /S /Q Lua
 goto :end
 
 :end
