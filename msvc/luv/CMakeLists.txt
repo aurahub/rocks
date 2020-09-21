@@ -15,7 +15,7 @@ option(BUILD_MODULE "Build as module" ON)
 option(BUILD_STATIC_LIBS "Build static library" OFF)
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
 option(WITH_SHARED_LIBUV "Link to a shared libuv library instead of static linking" OFF)
-option(WITH_CRT_MT "link to Visual Studio MT CRT library" OFF)
+option(WITH_CRT_MT "link to Visual Studio MT CRT Lib" OFF)
 
 if (MINGW)
   add_definitions(-D_WIN32_WINNT=0x0600)

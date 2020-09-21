@@ -65,3 +65,4 @@ if EXIST build RMDIR /S /Q build
 goto :end
 
 :end
+call echo end
