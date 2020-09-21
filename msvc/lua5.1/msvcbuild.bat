@@ -50,6 +50,7 @@ goto :clean
 cmake -H. -Bbuild %ARG_GENERATOR% %ARG_ARCH%
 
 cmake --build build --config Release
+explorer build\Release
 goto :end
 
 :clean
