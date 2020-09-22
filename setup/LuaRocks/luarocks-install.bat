@@ -1,0 +1,1 @@
+install /MSVC /P "C:\Program Files\LuaRocks\5.1" /LV 5.1 /CMOD "C:\Program Files\LuaRocks\5.1\cmod" /LUAMOD "C:\Program Files\LuaRocks\5.1\luamod" /SCRIPTS "C:\Program Files\LuaRocks\5.1\scripts" /F
