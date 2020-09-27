@@ -1,1 +1,1 @@
-install /MSVC /P "C:\Program Files\LuaRocks\5.1" /LV 5.1 /CMOD "C:\Program Files\LuaRocks\5.1\cmod" /LUAMOD "C:\Program Files\LuaRocks\5.1\luamod" /SCRIPTS "C:\Program Files\LuaRocks\5.1\scripts" /F
+install /MSVC /P "C:\Program Files\LuaRocks\5.1" /TREE "C:\Program Files\LuaRocks\5.1" /SCRIPTS "C:\Program Files\LuaRocks\5.1\scripts" /LUAMOD "C:\Program Files\LuaRocks\5.1\lua" /CMOD "C:\Program Files\LuaRocks\5.1\clibs" /LV 5.1 /LUA "C:\Program Files\Lua\5.1" /INC "C:\Program Files\Lua\5.1\include" /LIB "C:\Program Files\Lua\5.1\lib" /BIN "C:\Program Files\Lua\5.1"
