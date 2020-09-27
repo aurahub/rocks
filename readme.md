@@ -3,7 +3,7 @@
     vcpkg install luajit
     choco install luarocks
 
-# Ubuntu:
+# Ubuntu
 
     apt install -y cmake lua5.1 luarocks
     luarocks install luv
