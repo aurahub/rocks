@@ -14,7 +14,7 @@ c:on(
         
         local function distinct()
             Post:distinct(
-                "author",
+                "Age",
                 function(err, res)
                     p("distinct:", err, res)
                 end
@@ -23,7 +23,7 @@ c:on(
         
         local function update()
             local posts = Post:find({author = "Cyril Hou"})
-            posts:limit(10):skip(page * 10):update({authorAge = 25}):exec(
+            posts:limit(10):skip(page * 10):update({Age = 25}):exec(
                 function(err, res)
                     p("update:", err, res)
                     distinct()
