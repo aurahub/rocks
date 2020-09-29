@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lua-local",
+            "name": "launch process",
+            "type": "lua",
             "request": "launch",
-            "name": "Debug",
-            "program": {
-                "lua": "lua",
-                "file": "entry.lua"
-            }
+            "stopOnEntry": true,
+            "runtimeExecutable": "C:\\Program Files\\Lua\\5.1\\lua.exe",
+            "runtimeArgs": "${workspaceFolder}/main.lua",
+            "consoleCoding": "utf8"
         }
     ]
 }
