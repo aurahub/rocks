@@ -1,9 +1,3 @@
-
 .DS_Store
-logic
+src/Release/Server
 .vscode/settings.json
-*.ipch
-*.bin
-*.bin
-*.bin
-*.ipch
