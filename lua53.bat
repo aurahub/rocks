@@ -1,1 +1,0 @@
-for %%i in ("bin\msvc-x64-mt\lua5.3\*")  do (del %%~ni%%~xi && mklink /H "%%~ni%%~xi" %%i)
